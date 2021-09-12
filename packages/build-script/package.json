@@ -1,6 +1,6 @@
 {
   "name": "@onism/build-script",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "build script that convert ts/js file to es & commonjs module\"",
   "keywords": [
     "module",

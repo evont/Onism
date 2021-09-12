@@ -1,6 +1,6 @@
 {
   "name": "@onism/webp-convert-plugin",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "webpack plugin that convert image to webp & generate css",
   "author": "evont <evontgoh@foxmail.com>",
   "homepage": "https://github.com/evont/Onism#readme",
@@ -26,7 +26,7 @@
     "url": "https://github.com/evont/Onism/issues"
   },
   "devDependencies": {
-    "@onism/build-script": "^0.0.3"
+    "@onism/build-script": "^0.0.4"
   },
   "dependencies": {
     "fs-extra": "^10.0.0"
