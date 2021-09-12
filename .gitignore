@@ -2,5 +2,3 @@ node_modules
 __tests__
 es
 lib
-
-package-lock.json

@@ -1,6 +1,6 @@
 {
   "name": "@onism/image-slice-loader",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "> TODO: description",
   "author": "evont <evontgoh@foxmail.com>",
   "homepage": "https://github.com/evont/Onism#readme",
@@ -29,7 +29,7 @@
     "@onism/build-script": "^0.0.1"
   },
   "dependencies": {
-    "@onism/webpack-css-image-base": "^0.0.0",
+    "@onism/webpack-css-image-base": "^0.0.1",
     "find-cache-dir": "^3.3.2",
     "fs-extra": "^10.0.0",
     "image-size": "^1.0.0",
