@@ -1,10 +1,10 @@
 {
   "name": "@onism/webp-convert-plugin",
   "version": "0.0.2",
-  "description": "> TODO: description",
+  "description": "webpack plugin that convert image to webp & generate css",
   "author": "evont <evontgoh@foxmail.com>",
   "homepage": "https://github.com/evont/Onism#readme",
-  "license": "ISC",
+  "license": "MIT",
   "main": "./lib/index.js",
   "module": "./es/index.js",
   "files": [

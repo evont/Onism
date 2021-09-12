@@ -9,7 +9,7 @@
   ],
   "author": "evont <evontgoh@foxmail.com>",
   "homepage": "https://github.com/evont/Onism#readme",
-  "license": "ISC",
+  "license": "MIT",
   "main": "index.js",
   "bin": {
     "onism-build": "./index.js"

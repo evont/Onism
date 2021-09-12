@@ -1,10 +1,10 @@
 {
   "name": "@onism/webpack-css-image-base",
-  "version": "0.0.2",
-  "description": "> TODO: description",
+  "version": "0.0.1",
+  "description": "base plugin for css & image process",
   "author": "evont <evontgoh@foxmail.com>",
   "homepage": "https://github.com/evont/Onism#readme",
-  "license": "ISC",
+  "license": "MIT",
   "publishConfig": {
     "access": "public"
   },

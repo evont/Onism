@@ -1,10 +1,10 @@
 {
   "name": "@onism/image-slice-loader",
   "version": "0.0.2",
-  "description": "> TODO: description",
+  "description": "a loader to slice long image & generate css background",
   "author": "evont <evontgoh@foxmail.com>",
   "homepage": "https://github.com/evont/Onism#readme",
-  "license": "ISC",
+  "license": "MIT",
   "main": "./lib/index.js",
   "module": "./es/index.js",
   "scripts": {
