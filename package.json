@@ -5,6 +5,9 @@
     "packages/*"
   ],
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "cz": "git-cz"
   },
