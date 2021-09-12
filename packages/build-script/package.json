@@ -10,7 +10,7 @@
   "author": "evont <evontgoh@foxmail.com>",
   "homepage": "https://github.com/evont/Onism#readme",
   "license": "MIT",
-  "main": "index.js",
+  "main": "./index.js",
   "bin": {
     "onism-build": "./index.js"
   },
@@ -18,7 +18,7 @@
     "index.js"
   ],
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "access": "public"
   },
   "repository": {
     "type": "git",
