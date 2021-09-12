@@ -12,13 +12,10 @@
   "license": "ISC",
   "main": "index.js",
   "bin": {
-    "cafune-build": "./index.js"
-  },
-  "directories": {
-    "test": "__tests__"
+    "onism-build": "./index.js"
   },
   "files": [
-    "lib"
+    "index.js"
   ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

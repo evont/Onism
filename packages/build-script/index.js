@@ -49,10 +49,16 @@ function compile(dir, babelConfig) {
 }
 
 function exec({ config, src, es, lib }) {
-  const configFile = getAbsolutePath(config);
-  if (!checkConfigExist(configFile)) {
-    throw new Error(`${configFile} is not exist`);
+  let configFile = getAbsolutePath(config);
+  const fallbackConfig = path.resolve(__dirname, "../../babel.config.js");
+  if (!checkConfigExist(configFile) ) {
+    if (checkConfigExist(fallbackConfig) ) {
+      configFile = fallbackConfig;
+    } else {
+      throw new Error(`${configFile} is not exist`);
+    }
   }
+
   const srcDir = getAbsolutePath(src);
   const esDir = getAbsolutePath(es);
   const libDir = getAbsolutePath(lib);
