@@ -1,0 +1,39 @@
+{
+  "name": "@onism/build-script",
+  "version": "0.0.1",
+  "description": "build script that convert ts/js file to es & commonjs module\"",
+  "keywords": [
+    "module",
+    "commonjs",
+    "esmodule"
+  ],
+  "author": "evont <evontgoh@foxmail.com>",
+  "homepage": "https://github.com/evont/Onism#readme",
+  "license": "ISC",
+  "main": "index.js",
+  "bin": {
+    "cafune-build": "./index.js"
+  },
+  "directories": {
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evont/Onism.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/evont/Onism/issues"
+  },
+  "dependencies": {
+    "commander": "^8.2.0"
+  }
+}
