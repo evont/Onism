@@ -1,0 +1,27 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+.container {
+  overflow: auto;
+  max-height: 50vh;
+  max-width: 100vw;
+}
+#app {
+  long-bg: url(@assets/long-1.png) 375 300;
+}
+
+#app2 {
+  display: flex;
+  align-items: center;
+  height: 750px;
+  width: 7121px;
+
+  long-bg:  url(@assets/deep/long-2.jpeg) 375 120, 325, 333,880, 550, 1000,900,650,920, 988 row false;
+}
+
+#app3 {
+  display: flex;
+  flex-direction: column;
+  long-bg:  url(@assets/long-3.png) 375 2080, 1300, 1400,880, 550, 1000,900,920, 988 true;
+}

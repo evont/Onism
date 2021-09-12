@@ -1,0 +1,7 @@
+{
+  "image": "./test.jpeg",
+  "options": {
+    "slice": ["320", "456", 300],
+    "direction": "column"
+  }
+}

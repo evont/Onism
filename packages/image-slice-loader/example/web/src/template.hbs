@@ -1,0 +1,6 @@
+background-repeat: no-repeat; 
+background-position: {{#each bgs}}{{left}} {{top}}{{#if isLast}}{{else}},{{/if}} {{/each}};
+background-size: {{#each bgs}}{{width}} {{height}}{{#if isLast}}{{else}},{{/if}}{{/each}};
+background-image: {{#each bgs}}url({{url}}){{#if isLast}}{{else}},{{/if}}{{/each}};
+width: {{imgWidth}};
+height: {{imgHeight}};

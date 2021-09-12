@@ -1,6 +1,8 @@
 import postcss, { AcceptedPlugin, ProcessOptions } from "postcss";
+import { getOptions } from "loader-utils";
+
 export type GetPlugin = (loaderContext: any) => AcceptedPlugin[];
-export default function createLoader(getPlugin) {
+export default function createLoader(getPlugin, onSuccess) {
   return function (source, meta) {
     const callback = this?.async();
     this?.cacheable();
@@ -15,13 +17,15 @@ export default function createLoader(getPlugin) {
         annotation: false,
       };
     }
-    let plugins = getPlugin(this);
+    const loaderOption = getOptions(this) || {};
+    let plugins = getPlugin(this, loaderOption);
     if (!Array.isArray(plugins)) plugins = [plugins];
-    postcss(plugins)
+    return postcss(plugins)
       .process(source, options)
       .then((result) => {
         const map = result.map && result.map.toJSON();
         callback(null, result.css, map);
+        onSuccess(result)
         return null;
       })
       .catch((error) => {

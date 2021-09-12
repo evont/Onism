@@ -1,0 +1,1 @@
+(()=>{"use strict";!function(A){const n=new Image;n.onerror=function(){A(!1)},n.onload=function(){A(1==n.width)},n.src="data:image/webp;base64,UklGRiwAAABXRUJQVlA4ICAAAAAUAgCdASoBAAEAL/3+/3+CAB/AAAFzrNsAAP5QAAAAAA=="}((A=>{document.body.classList.add(A?"webp":"nowebp")}))})();

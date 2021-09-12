@@ -3,9 +3,12 @@ const { Command } = require("commander");
 const fs = require("fs-extra");
 const babel = require("@babel/core");
 const path = require("path");
+const glob = require("glob");
+const gaze = require("gaze");
 const cwd = process.cwd();
 const program = new Command();
 program
+  .option("-w, --watch", "should turn on watch mode or not")
   .option("-c, --config <type>", "babel config file path", "./babel.config.js")
   .option("-s, --src <type>", "src path to compile", "./src")
   .option(
@@ -32,7 +35,7 @@ const isDir = (dir) => fs.lstatSync(dir).isDirectory();
 const isScript = (file) => scriptRegExp.test(file);
 function compile(dir, babelConfig) {
   const files = fs.readdirSync(dir);
-  
+
   files.forEach(async (file) => {
     const filePath = path.join(dir, file);
 
@@ -48,33 +51,44 @@ function compile(dir, babelConfig) {
   });
 }
 
-function exec({ config, src, es, lib }) {
+function exec({ watch = false, config, src, es, lib }) {
+  const babelConfig = {
+    rootMode: "upward-optional",
+  };
   let configFile = getAbsolutePath(config);
-  const fallbackConfig = path.resolve(__dirname, "../../babel.config.js");
-  if (!checkConfigExist(configFile) ) {
-    if (checkConfigExist(fallbackConfig) ) {
-      configFile = fallbackConfig;
-    } else {
-      throw new Error(`${configFile} is not exist`);
-    }
+  if (checkConfigExist(configFile)) {
+    babelConfig.configFile = configFile;
   }
-
   const srcDir = getAbsolutePath(src);
   const esDir = getAbsolutePath(es);
   const libDir = getAbsolutePath(lib);
 
-  const babelConfig = {
-    configFile,
+  const globPattern = "**/*.ts";
+  const run = () => {
+    glob(globPattern, {
+      cwd: srcDir
+    }, (err, files) => {
+      if (err) {
+        throw err;
+      }
+
+      fs.emptyDirSync(esDir);
+      fs.emptyDirSync(libDir);
+      fs.copySync(srcDir, esDir);
+      compile(esDir, babelConfig);
+
+      process.env.BABEL_MODULE = "commonjs";
+      fs.copySync(srcDir, libDir);
+      compile(libDir, babelConfig);
+
+    });
   };
-
-  fs.emptyDirSync(esDir);
-  fs.emptyDirSync(libDir);
-  fs.copySync(srcDir, esDir);
-  compile(esDir, babelConfig);
-
-  process.env.BABEL_MODULE = "commonjs";
-  fs.copySync(srcDir, libDir);
-  compile(libDir, babelConfig);
+  run();
+  if (watch) {
+    gaze(globPattern, { cwd: srcDir }, (err, watcher) => {
+      watcher.on('all', run);
+    });
+  }
 }
 
 exec(program.opts());

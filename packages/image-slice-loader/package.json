@@ -5,13 +5,15 @@
   "author": "evont <evontgoh@foxmail.com>",
   "homepage": "https://github.com/evont/Onism#readme",
   "license": "ISC",
-  "main": "lib/image-slice-loader.js",
-  "directories": {
-    "lib": "lib",
-    "test": "__tests__"
+  "main": "./lib/index.js",
+  "module": "./es/index.js",
+  "scripts": {
+    "build": "onism-build",
+    "start": "onism-build -w"
   },
   "files": [
-    "lib"
+    "lib",
+    "es"
   ],
   "publishConfig": {
     "access": "public"
@@ -20,13 +22,20 @@
     "type": "git",
     "url": "git+https://github.com/evont/Onism.git"
   },
-  "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
-  },
   "bugs": {
     "url": "https://github.com/evont/Onism/issues"
   },
   "devDependencies": {
     "@onism/build-script": "^0.0.1"
+  },
+  "dependencies": {
+    "@onism/webpack-css-image-base": "^0.0.0",
+    "find-cache-dir": "^3.3.2",
+    "fs-extra": "^10.0.0",
+    "image-size": "^1.0.0",
+    "loader-utils": "^2.0.0",
+    "postcss": "^8.3.6",
+    "schema-utils": "^3.1.1",
+    "sharp": "^0.29.1"
   }
 }

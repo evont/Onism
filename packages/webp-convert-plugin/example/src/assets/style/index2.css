@@ -1,0 +1,11 @@
+.test {
+  background: url(@assets/image/p1.png) no-repeat center/420px, url(@assets/image/p2.png) no-repeat center/340px;
+}
+
+.test2 {
+  background: url(@assets/image/p3.png) no-repeat center/420px  url(@assets/image/p4.jpeg) no-repeat center/420px;
+}
+
+.test3 {
+  background-image: url(@assets/image/p5.jpeg);
+}

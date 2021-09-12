@@ -1,0 +1,25 @@
+#app {
+  background: url(./5afe606d1280f931e63c.jpeg) no-repeat center/420px, url(./5a02ea3e6d21a2d8f6cd.jpeg) no-repeat center/340px;
+}
+
+#app2 {
+  background: url(./158d51fbc2f5ecd0634b.png) no-repeat center/420px;
+}
+
+#app3 {
+  background-image: url(./d8c54f5d827bfcf83c5d.png), url(./90ee04f1d72985ebe04c.png);
+  background-size: contain, 1200px;
+  background-position: center;
+  background-color: #ccc;
+}
+.test {
+  background: url(./158d51fbc2f5ecd0634b.png) no-repeat center/420px, url(./d8c54f5d827bfcf83c5d.png) no-repeat center/340px;
+}
+
+.test2 {
+  background: url(./90ee04f1d72985ebe04c.png) no-repeat center/420px  url(./5afe606d1280f931e63c.jpeg) no-repeat center/420px;
+}
+
+.test3 {
+  background-image: url(./5a02ea3e6d21a2d8f6cd.jpeg);
+}
