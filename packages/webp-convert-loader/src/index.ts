@@ -1,21 +1,24 @@
 import postcss from "postcss";
 import { getOptions } from "loader-utils";
-import getPlugin from "./plugin";
-
+import getPlugin from "./postcssPlugin";
 import { LoaderOptions } from "./type";
+
 function mergeOptions(options: LoaderOptions): LoaderOptions {
   const defaultClassName = {
-    webp: 'webp',
-    nowebp: 'nowebp'
-  }
+    webp: "webp",
+    nowebp: "nowebp",
+  };
   const mergeOption = Object.assign(
     {
       outputPath: "./",
-      className: defaultClassName
+      className: defaultClassName,
     },
     options
   );
-  mergeOption.className = Object.assign(defaultClassName, mergeOption.className);
+  mergeOption.className = Object.assign(
+    defaultClassName,
+    mergeOption.className
+  );
   // validate(schema, mergeOption, {
   //   name: LOADER_NAME,
   // });
@@ -34,7 +37,7 @@ export default function loader(source) {
 
     const { PostcssPlugin } = getPlugin({
       loaderContext: this,
-      options
+      options,
     });
     postcss(PostcssPlugin)
       .process(source, pcOptions)

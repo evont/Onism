@@ -2,7 +2,6 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-
 module.exports = {
   mode: "production",
   entry: "./src/index.js",
@@ -10,11 +9,11 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     publicPath: "./"
   },
-  // resolveLoader: {
-  //   alias: {
-  //     'webp-convert-loader': path.resolve(__dirname, '../../')
-  //   }
-  // },
+  resolveLoader: {
+    alias: {
+      'webp-convert-loader': path.resolve(__dirname, '../lib')
+    }
+  },
   resolve: {
     alias: {
       "@assets": path.resolve("./src/assets"),

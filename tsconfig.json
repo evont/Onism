@@ -5,7 +5,8 @@
     "lib":["es2018", "dom"],
     "module": "commonjs",
     "sourceMap": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "downlevelIteration": true
   },
   "exclude": [
     "node_modules"

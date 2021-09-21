@@ -4,7 +4,7 @@ import { transformAlias, startsWith } from "./util";
 import * as path from "path";
 import * as fs from "fs-extra";
 import { ImagePool } from "@squoosh/lib";
-
+import { cpus } from 'os';
 const targets = {
   ".png": "oxipng",
   ".jpg": "mozjpeg",
@@ -19,7 +19,7 @@ async function minify({
   loaderContext,
   url
 }) {
-
+  
   const _compilation = loaderContext._compilation;
   try {
     const imagePath = await new Promise<string>((resolve, reject) =>
@@ -39,7 +39,9 @@ async function minify({
       webp: {},
       // ...minifyOptions.encodeOptions,
     };
-    const imagePool = new ImagePool();
+    const len = cpus().length;
+    const imagePool = new ImagePool(len);
+    console.time()
     const image = imagePool.ingestImage(imagePath);
     await image.decoded;
     await image.preprocess({
@@ -49,6 +51,8 @@ async function minify({
       },
     });
     await image.encode(encodeOptions);
+    await imagePool.close();
+    console.timeEnd()
     //TODO: compare image size
     const rawImage = await image.encodedWith[targetCodec];
     const rawImageInWebp = await image.encodedWith.webp;
@@ -60,6 +64,7 @@ async function minify({
     // } else {
     //   console.log(imagePath);
     // }
+    
     const { path: newName } = _compilation.getPathWithInfo(
       "[path][name][ext].webp",
       {
@@ -76,7 +81,6 @@ async function minify({
       Buffer.from(rawImage.binary),
       ""
     );
-    console.log(rawImageInWebp.size, rawImage.size);
     if (rawImageInWebp.size < rawImage.size) {
       loaderContext.emitFile(
         path.basename(imagePath) + ".webp",
@@ -85,7 +89,6 @@ async function minify({
       );
     }
 
-    await imagePool.close();
   } catch (err) {
     console.error(err);
     console.error(`${url} is not found`);
@@ -122,7 +125,6 @@ export default ({ loaderContext, options }) => {
       webpDecl: Declaration;
     }
   > = {};
-  console.log(outputPath, realOutput);
   fs.ensureDirSync(realOutput);
   const PostcssPlugin: PluginCreator<{}> = function () {
     return {

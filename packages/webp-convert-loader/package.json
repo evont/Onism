@@ -1,7 +1,7 @@
 {
-  "name": "@onism/webp-convert-plugin",
+  "name": "@onism/webp-convert-loader",
   "version": "0.0.4",
-  "description": "webpack plugin that convert image to webp & generate css",
+  "description": "webpack loader that convert image to webp & generate css",
   "author": "evont <evontgoh@foxmail.com>",
   "homepage": "https://github.com/evont/Onism#readme",
   "license": "MIT",
@@ -29,6 +29,8 @@
     "@onism/build-script": "^0.0.4"
   },
   "dependencies": {
-    "fs-extra": "^10.0.0"
+    "@squoosh/lib": "^0.4.0",
+    "fs-extra": "^10.0.0",
+    "postcss-value-parser": "^4.1.0"
   }
 }
