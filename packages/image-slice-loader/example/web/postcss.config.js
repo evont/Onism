@@ -3,6 +3,7 @@ module.exports = {
     'autoprefixer': {},
     'postcss-px-to-viewport': {
       viewportWidth: 375,
-    }
+    },
+    'cssnano': {},
   }
 }

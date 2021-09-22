@@ -52,7 +52,7 @@ after setup loaders of css, you can use this feature in your css with the follow
 
   ```css
   #app {
-    long-bg: url(@assets/long-1.png) 375 300;
+    background: url(@assets/long-1.png?size=375&slice=300);
   }
   ```
 
@@ -62,8 +62,7 @@ after setup loaders of css, you can use this feature in your css with the follow
 
   ```css
   #app2 {
-    long-bg: url(@assets/deep/long-2.jpeg) 375 120, 325, 333, 880, 550, 1000, 900,
-      650, 920, 988 row;
+    background-image: url(@assets/deep/long-2.jpeg?size=375&direction=row&slice=120,325,333,880,550,1000,900,650,920,988);
   }
   ```
 
@@ -71,8 +70,7 @@ after setup loaders of css, you can use this feature in your css with the follow
 
   ```css
   #app3 {
-    long-bg: url(@assets/long-3.png) 375 540, 425, 333, 880, 550, 1000, 900, 650,
-      920, 988 true;
+    background: url(@assets/long-3.png?size=375&slice=2080,1300,1400,880,550,1000,900,920,988&seprate=1);
   }
   ```
 
@@ -80,20 +78,9 @@ after setup loaders of css, you can use this feature in your css with the follow
 
 |              Name               |                        Type                         |     Default      | Description                                                                                                                     |
 | :-----------------------------: | :-------------------------------------------------: | :--------------: | :------------------------------------------------------------------------------------------------------------------------------ |
-|   [**`property`**](#property)   |                     `{String}`                      |    `long-bg`     | Custom CSS property name                                                                                                        |
 |     [**`output`**](#output)     | `{String\|Function(name, index, hash) -> {String}}` | `[hash]_[index]` | Output name formate for slice image                                                                                             |
 | [**`outputPath`**](#outputPath) |                     `{String}`                      |    `./slice`     | Output path of slice images, relative to [webpack root context](https://v4.webpack.docschina.org/api/loaders/#this-rootcontext) |
 |   [**`template`**](#template)   |           `{Function(data) -> {String}}`            |       `''`       | Template function of virtual property transformed local CSS                                                                     |
-
-### `property`
-
-Custom CSS property name, for example, if you use `long-pic`, your CSS will be like:
-
-```css
-#app {
-  long-pic: url(@assets/long-1.png) 375;
-}
-```
 
 ### `output`
 

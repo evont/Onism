@@ -23,7 +23,7 @@
 #app3 {
   display: flex;
   flex-direction: column;
-  background: url(@assets/long-3.png?size=375&slice=2080,1300,1400,880,550,1000,900,920,988&seprate=1);
+  background-image: url(@assets/long-3.png?size=375&slice=2080,1300,1400,880,550,1000,900,920,988&seprate=1);
   /* long-bg:  url(@assets/long-3.png) 375 2080, 1300, 1400,880, 550, 1000,900,920, 988 true; */
 }
 

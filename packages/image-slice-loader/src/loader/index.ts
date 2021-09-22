@@ -9,7 +9,6 @@ import { createLoader } from "@onism/webpack-css-image-base";
 function mergeOptions(options: LoaderOptions): LoaderOptions {
   const mergeOption = Object.assign(
     {
-      property: "long-bg",
       outputPath: "./slice",
       output: "[hash]_[index]",
     },
@@ -40,38 +39,3 @@ export default createLoader(
     setCache(loaderCache);
   }
 );
-// export default function loader(source) {
-//   const callback = this.async();
-//   this.cacheable();
-//   let options: LoaderOptions = {};
-//   try {
-//     options = mergeOptions(getOptions(this) || {});
-//     if (options.cachePath) {
-//       setCachePath(options.cachePath)
-//     }
-//     const pcOptions = {
-//       to: this.resourcePath,
-//       from: this.resourcePath,
-//     };
-
-//     const { cache, PostcssPlugin } = getPlugin({
-//       loaderContext: this,
-//       options,
-//     });
-//     postcss(PostcssPlugin)
-//       .process(source, pcOptions)
-//       .then((result) => {
-//         const map = result.map && result.map.toJSON();
-//         // console.log(cache);
-//         invalidCache(cache);
-
-//         setCache(cache);
-//         callback(null, result.css, map);
-//       })
-//       .catch((error) => {
-//         callback(error);
-//       });
-//   } catch (error) {
-//     callback(error);
-//   }
-// }

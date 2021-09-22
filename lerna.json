@@ -3,6 +3,7 @@
     "packages/*"
   ],
   "version": "independent",
+  "workspaces": true,
   "command": {
     "publish": {
       "ignoreChanges": [

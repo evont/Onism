@@ -1,10 +1,6 @@
 export default {
   type: "object" as const,
   properties: {
-    property: {
-      description: "Custom CSS property name.",
-      type: "string" as const,
-    },
     output: {
       description: "slice block name",
       anyOf: [{ instanceof: "Function" as const }, { type: "string" as const }],
