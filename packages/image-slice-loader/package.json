@@ -1,6 +1,6 @@
 {
   "name": "@onism/image-slice-loader",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "a loader to slice long image & generate css background",
   "author": "evont <evontgoh@foxmail.com>",
   "homepage": "https://github.com/evont/Onism#readme",
@@ -26,7 +26,7 @@
     "url": "https://github.com/evont/Onism/issues"
   },
   "devDependencies": {
-    "@onism/build-script": "^0.0.4"
+    "@onism/build-script": "^0.0.5"
   },
   "dependencies": {
     "@onism/webpack-css-image-base": "^0.0.2",
