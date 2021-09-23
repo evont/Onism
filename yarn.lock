@@ -1921,7 +1921,9 @@
     "@octokit/openapi-types" "^10.2.2"
 
 "@onism/webpack-css-image-base@^0.0.2":
-  version "0.0.4"
+  version "0.0.5"
+  resolved "https://registry.npmmirror.com/@onism/webpack-css-image-base/download/@onism/webpack-css-image-base-0.0.5.tgz#5fbdad822e3c5399d5eed60ce30e98e847352ebe"
+  integrity sha1-X72tgi48U5nV7tYM4w6Y6Ec1Lr4=
   dependencies:
     fs-extra "^10.0.0"
     loader-utils "^2.0.0"
@@ -2832,7 +2834,14 @@ cosmiconfig@^7.0.0:
     path-type "^4.0.0"
     yaml "^1.10.0"
 
-cross-spawn@^7.0.2, cross-spawn@^7.0.3:
+cross-env@^7.0.3:
+  version "7.0.3"
+  resolved "https://registry.nlark.com/cross-env/download/cross-env-7.0.3.tgz#865264b29677dc015ba8418918965dd232fc54cf"
+  integrity sha1-hlJkspZ33AFbqEGJGJZd0jL8VM8=
+  dependencies:
+    cross-spawn "^7.0.1"
+
+cross-spawn@^7.0.1, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
   version "7.0.3"
   resolved "https://registry.nlark.com/cross-spawn/download/cross-spawn-7.0.3.tgz?cache=0&sync_timestamp=1618910529129&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fcross-spawn%2Fdownload%2Fcross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
   integrity sha1-9zqFudXUHQRVUcF34ogtSshXKKY=
@@ -6421,7 +6430,7 @@ shallow-clone@^3.0.0:
 
 sharp@^0.29.1:
   version "0.29.1"
-  resolved "https://registry.nlark.com/sharp/download/sharp-0.29.1.tgz?cache=0&sync_timestamp=1631009714354&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fsharp%2Fdownload%2Fsharp-0.29.1.tgz#f60b50f24f399464a24187c86bd2da41aae50b85"
+  resolved "https://registry.nlark.com/sharp/download/sharp-0.29.1.tgz#f60b50f24f399464a24187c86bd2da41aae50b85"
   integrity sha1-9gtQ8k85lGSiQYfIa9LaQarlC4U=
   dependencies:
     color "^4.0.1"

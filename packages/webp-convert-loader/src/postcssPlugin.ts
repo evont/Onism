@@ -41,7 +41,6 @@ async function minify({
     };
     const len = cpus().length;
     const imagePool = new ImagePool(len);
-    console.time()
     const image = imagePool.ingestImage(imagePath);
     await image.decoded;
     await image.preprocess({
@@ -52,7 +51,6 @@ async function minify({
     });
     await image.encode(encodeOptions);
     await imagePool.close();
-    console.timeEnd()
     //TODO: compare image size
     const rawImage = await image.encodedWith[targetCodec];
     const rawImageInWebp = await image.encodedWith.webp;
@@ -130,22 +128,22 @@ export default ({ loaderContext, options }) => {
     return {
       postcssPlugin: "webp-connvert-parser",
       async Declaration(decl) {
-        if (decl.prop === "background" || decl.prop === "background-image") {
-          const { selector } = decl.parent as Rule;
-          result[selector] = Object.assign(result[selector] || {}, {
-            url: result[selector]?.url || [],
-            decl,
-            webpDecl: undefined,
-          });
-          const { nodes } = valueParser(decl.value);
-          for (const node of nodes) {
-            if (node.value === "url") {
-              const [urlNode] = (node as FunctionNode).nodes;
-              const url = urlNode.value;
-              result[selector].url.push(url);
-            }
-          }
-        }
+        // if (decl.prop === "background" || decl.prop === "background-image") {
+        //   const { selector } = decl.parent as Rule;
+        //   result[selector] = Object.assign(result[selector] || {}, {
+        //     url: result[selector]?.url || [],
+        //     decl,
+        //     webpDecl: undefined,
+        //   });
+        //   const { nodes } = valueParser(decl.value);
+        //   for (const node of nodes) {
+        //     if (node.value === "url") {
+        //       const [urlNode] = (node as FunctionNode).nodes;
+        //       const url = urlNode.value;
+        //       result[selector].url.push(url);
+        //     }
+        //   }
+        // }
       },
       async OnceExit(root, { Rule }) {
         //console.log(root)
