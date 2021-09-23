@@ -128,6 +128,10 @@ export default ({ loaderContext, options }) => {
     return {
       postcssPlugin: "webp-connvert-parser",
       async Declaration(decl) {
+        if (/\.(jpe?g|png)(?!(\.webp|.*[&?]format=webp))/i.test(decl.value)) {
+          let rule = decl.parent;
+          console.log(rule);
+        }
         // if (decl.prop === "background" || decl.prop === "background-image") {
         //   const { selector } = decl.parent as Rule;
         //   result[selector] = Object.assign(result[selector] || {}, {
