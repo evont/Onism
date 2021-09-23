@@ -10,14 +10,7 @@
   },
   "scripts": {
     "cz": "git-cz",
-    "dev": "yarn workspace @onism/$WP run start",
-    "dev:image-slice": "cross-env WP=image-slice-loader yarn dev",
-    "dev:webp-convert": "cross-env WP=webp-convert-loader yarn dev",
-    "dev:webpack-base": "cross-env WP=webpack-css-image-base yarn dev",
-    "build": "yarn workspace @onism/$WP run build",
-    "build:image-slice": "cross-env WP=image-slice-loader yarn build",
-    "build:webp-convert": "cross-env WP=webp-convert-loader yarn build",
-    "build:webpack-base": "cross-env WP=webpack-css-image-base yarn build"
+    "run-task": "node ./script/task.js"
   },
   "config": {
     "commitizen": {
@@ -47,6 +40,7 @@
     "cross-env": "^7.0.3",
     "cz-lerna-changelog": "^2.0.3",
     "husky": "^7.0.2",
+    "inquirer": "^8.1.5",
     "lerna": "^4.0.0",
     "lint-staged": "^11.1.2",
     "standard": "^16.0.3",
