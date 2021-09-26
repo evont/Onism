@@ -39,6 +39,8 @@
     "commitizen": "^4.2.4",
     "cross-env": "^7.0.3",
     "cz-lerna-changelog": "^2.0.3",
+    "fs-extra": "^10.0.0",
+    "glob": "^7.1.7",
     "husky": "^7.0.2",
     "inquirer": "^8.1.5",
     "lerna": "^4.0.0",
