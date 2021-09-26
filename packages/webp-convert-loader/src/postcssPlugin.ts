@@ -1,19 +1,19 @@
 import { Declaration, PluginCreator, Rule } from "postcss";
 import valueParser, { FunctionNode } from "postcss-value-parser";
 import { getHashDigest } from "loader-utils";
-import { transformAlias, startsWith } from "./util";
-import * as path from "path";
-import * as fs from "fs-extra";
+// import { transformAlias, startsWith } from "./util";
+// import * as path from "path";
+// import * as fs from "fs-extra";
 import sharp from "sharp";
-const targets = {
-  ".png": "oxipng",
-  ".jpg": "mozjpeg",
-  ".jpeg": "mozjpeg",
-  ".jxl": "jxl",
-  ".webp": "webp",
-  ".avif": "avif",
-  // ...minifyOptions.targets,
-};
+// const targets = {
+//   ".png": "oxipng",
+//   ".jpg": "mozjpeg",
+//   ".jpeg": "mozjpeg",
+//   ".jxl": "jxl",
+//   ".webp": "webp",
+//   ".avif": "avif",
+//   // ...minifyOptions.targets,
+// };
 
 async function convertToWebp(url, loaderContext) {
   try {
@@ -23,33 +23,41 @@ async function convertToWebp(url, loaderContext) {
       )
     );
     const old = await sharp(imagePath);
-    const { info: { size }, data: oldData, hash } = await new Promise((resolve, reject) => {
+    const {
+      info: { size },
+      data: oldData,
+      hash,
+    } = await new Promise((resolve, reject) => {
       old.toBuffer((err, data, info) => {
         if (err) reject(err);
         const hash = getHashDigest(data);
         resolve({
           data,
           info,
-          hash
-        })
+          hash,
+        });
       });
-    })
-    
-    const webp = await old.webp({
-      lossless: true
-    })
+    });
 
-    const { info: { size: webpSize }, data: webpData, hash: webpHash } = await new Promise((resolve, reject) => {
+    const webp = await old.webp({
+      lossless: true,
+    });
+
+    const {
+      info: { size: webpSize },
+      data: webpData,
+      hash: webpHash,
+    } = await new Promise((resolve, reject) => {
       webp.toBuffer((err, data, info) => {
         if (err) reject(err);
         const hash = getHashDigest(data);
         resolve({
           data,
           info,
-          hash
-        })
+          hash,
+        });
       });
-    })
+    });
 
     if (webpSize < size) {
       const imgName = `${imagePath}.webp`;
@@ -57,8 +65,8 @@ async function convertToWebp(url, loaderContext) {
       return {
         hash,
         webpHash,
-        imgName
-      }
+        imgName,
+      };
     }
     return null;
   } catch (err) {
@@ -66,42 +74,17 @@ async function convertToWebp(url, loaderContext) {
     console.error(`${url} is not found`);
   }
 }
-export default ({ loaderContext, options }) => {
-  let { outputPath, className } = options;
-  const compilerOptions = loaderContext._compiler.options;
-  const _alias = compilerOptions.resolve.alias;
-  const _context = compilerOptions.context || loaderContext.rootContext;
-
-  const alias = transformAlias(_alias);
-
-  let realOutput = outputPath;
-  // if output path is match alias, transform into alias path
-  for (const item of alias) {
-    if (
-      outputPath === item.name ||
-      (!item.onlyModule && startsWith(outputPath, item.name + "/"))
-    ) {
-      if (
-        outputPath !== item.alias &&
-        !startsWith(outputPath, `${item.alias}/`)
-      ) {
-        realOutput = item.alias + outputPath.substr(item.name.length);
-      }
-    }
-  }
-  if (!path.isAbsolute(realOutput)) {
-    realOutput = path.resolve(_context, realOutput);
-    outputPath = path.resolve(_context, outputPath);
-  }
+export default ({ loaderContext, options = {} }) => {
   const DEFAULT_OPTIONS = {
     modules: false,
     noWebpClass: "no-webp",
     webpClass: "webp",
     addNoJs: true,
-    noJsClass: "no-js"
+    noJsClass: "no-js",
   };
   let { modules, noWebpClass, webpClass, addNoJs, noJsClass } = {
     ...DEFAULT_OPTIONS,
+    ...options,
   };
   function removeHtmlPrefix(className) {
     return className.replace(/html ?\./, "");
@@ -131,8 +114,7 @@ export default ({ loaderContext, options }) => {
     }
     return selector;
   }
-  fs.ensureDirSync(realOutput);
-  const cacheMap = new Map();
+  // const cacheMap = new Map();
   const PostcssPlugin: PluginCreator<{}> = function () {
     return {
       postcssPlugin: "webp-connvert-parser",
@@ -162,18 +144,18 @@ export default ({ loaderContext, options }) => {
           webp.selectors = webp.selectors.map((i) => addClass(i, webpClass));
           for (const node of webp.nodes) {
             const i = node as Declaration;
-              const { nodes } = valueParser(decl.value);
-              for (const node of nodes) {
-                if (node.value === "url") {
-                  const [urlNode] = (node as FunctionNode).nodes;
-                  const url = urlNode.value;
-                  const converResult = await convertToWebp(url, loaderContext);
-                  if (converResult) {
-                    const { imgName } = converResult;
-                    i.value = i.value.replace(url, imgName)
-                  }
+            const { nodes } = valueParser(decl.value);
+            for (const node of nodes) {
+              if (node.value === "url") {
+                const [urlNode] = (node as FunctionNode).nodes;
+                const url = urlNode.value;
+                const converResult = await convertToWebp(url, loaderContext);
+                if (converResult) {
+                  const { imgName } = converResult;
+                  i.value = i.value.replace(url, imgName);
                 }
               }
+            }
           }
           decl.remove();
           if (rule.nodes.length === 0) rule.remove();
