@@ -26,10 +26,10 @@
     "url": "https://github.com/evont/Onism/issues"
   },
   "devDependencies": {
-    "@onism/build-script": "^0.0.4"
+    "@onism/build-script": "workspace:*"
   },
   "dependencies": {
-    "@onism/webpack-css-image-base": "^0.0.2",
+    "@onism/webpack-css-image-base": "workspace:*",
     "find-cache-dir": "^3.3.2",
     "fs-extra": "^10.0.0",
     "image-size": "^1.0.0",

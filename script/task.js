@@ -48,8 +48,8 @@ glob(
       .then((answers) => {
         const { package, command } = answers;
         const sp = spawn(
-          "yarn",
-          ["workspace", `@onism/${package}`, "run", command],
+          "pnpm",
+          [command, "--filter", `@onism/${package}`],
           {
             stdio: "pipe",
             env: Object.assign(process.env, { FORCE_COLOR: true }),
