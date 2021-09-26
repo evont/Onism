@@ -24,6 +24,7 @@ function mergeOptions(options: LoaderOptions): LoaderOptions {
   // });
   return mergeOption;
 }
+
 export default function loader(source) {
   const callback = this?.async();
   this?.cacheable();
