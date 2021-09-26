@@ -141,7 +141,6 @@ export default ({ loaderContext, options }) => {
     ...DEFAULT_OPTIONS,
   }
   function removeHtmlPrefix(className) {
-    console.log(className);
     return className.replace(/html ?\./, '')
   }
   function addClass(selector, className) {
@@ -177,21 +176,22 @@ export default ({ loaderContext, options }) => {
         if (/\.(jpe?g|png)(?!(\.webp|.*[&?]format=webp))/i.test(decl.value)) {
           let rule = decl.parent as Rule;
           if (rule.selector.includes(`.${removeHtmlPrefix(noWebpClass)}`) || rule.selector.includes(`.${removeHtmlPrefix(noJsClass)}`)) return
-          // let webp = rule.clone();
-          // webp.each((i: Declaration) => {
-          //   if (i.prop !== decl.prop && i.value !== decl.value) i.remove()
-          // })
-          // webp.selectors = webp.selectors.map(i => addClass(i, webpClass))
-          // webp.each((i: Declaration) => {
-          //   if (
-          //     rename &&
-          //     Object.prototype.toString.call(rename) === '[object Function]'
-          //   ) {
-          //     i.value = rename(i.value)
-          //   }
-          //   const { nodes } = valueParser(i.value);
-          //   console.log(i.prop, nodes)
-          // })
+          let webp = rule.clone();
+          webp.each((i: Declaration) => {
+            if (i.prop !== decl.prop && i.value !== decl.value && !/WEBP_CONVER__/.test(i.prop)) i.remove()
+          })
+          webp.selectors = webp.selectors.map(i => addClass(i, webpClass));
+          webp.each((i: Declaration) => {
+            if (
+              rename &&
+              Object.prototype.toString.call(rename) === '[object Function]'
+            ) {
+              i.value = rename(i.value)
+              if (!/WEBP_CONVER__/.test(i.prop)) i.prop = "WEBP_CONVER__" + i.prop;
+              
+            }
+            console.log(i.prop, i.value);
+          })
           let noWebp = rule.cloneAfter()
           noWebp.each((i: Declaration) => {
             if (i.prop !== decl.prop && i.value !== decl.value) i.remove()
