@@ -1,7 +1,7 @@
 export interface LoaderOptions {
-  outputPath?: string;
-  className?: {
-    webp?: string;
-    nowebp?: string;
-  }
+  modules: boolean;
+  noWebpClass: string;
+  webpClass: string;
+  addNoJs: boolean;
+  noJsClass: string;
 }

@@ -24,9 +24,6 @@
     "type": "git",
     "url": "git+https://github.com/evont/Onism.git"
   },
-  "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
-  },
   "bugs": {
     "url": "https://github.com/evont/Onism/issues"
   },

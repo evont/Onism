@@ -1,14 +1,34 @@
+html {
+  background: url(@assets/image/p4.jpeg) no-repeat center/420px, url(@assets/image/p5.jpeg) no-repeat center/340px;
+  height: 399px;
+  width: 300px;
+  display: flex;
+}
 #app {
+  display: flex;
+  justify-content: center;
   background: url(@assets/image/p4.jpeg) no-repeat center/420px, url(@assets/image/p5.jpeg) no-repeat center/340px;
 }
 
 #app2 {
+  margin: 12px;
+  padding: 20px;
   background: url(@assets/image/p1.png) no-repeat center/420px;
 }
 
 #app3 {
+  position: relative;
+  font-size: 32px;
   background-image: url(@assets/image/p2.png), url(@assets/image/p3.png);
   background-size: contain, 1200px;
   background-position: center;
   background-color: #ccc;
+}
+
+#app4::after {
+  content: url(@assets/image/p1.png);
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 30px;
 }
