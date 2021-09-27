@@ -146,7 +146,6 @@ export default ({ loaderContext, options = {} }) => {
     }
     return selector;
   }
-  // const cacheMap = new Map();
   const PostcssPlugin: PluginCreator<{}> = function () {
     return {
       postcssPlugin: "webp-connvert-parser",
@@ -183,36 +182,39 @@ export default ({ loaderContext, options = {} }) => {
               }
             }
           }
-          let deleteDecl = false;
-          let noWebp = rule.cloneAfter();
-          noWebp.each((i: Declaration) => {
-            if (i.prop !== decl.prop && i.value !== decl.value) {
-              i.remove();
-            } else {
-              if (minifyMap.has(i.prop)) {
-                deleteDecl = true;
-                i.value = minifyMap.get(i.prop);
-              }
-            }
-          });
-          noWebp.selectors = noWebp.selectors.map((i) =>
-            addClass(i, noWebpClass)
-          );
-
-          let webp = rule.cloneAfter();
+          let hasWebp = false;
+          let webp = rule.clone();
           webp.each((i: Declaration) => {
             if (i.prop !== decl.prop && i.value !== decl.value) {
               i.remove();
             } else {
               if (webpMap.has(i.prop)) {
-                deleteDecl = true;
+                hasWebp = true;
                 i.value = webpMap.get(i.prop);
               }
             }
           });
-          webp.selectors = webp.selectors.map((i) => addClass(i, webpClass));
+          if (hasWebp) {
+            webp.selectors = webp.selectors.map((i) => addClass(i, webpClass));
+            rule.after(webp);
 
-          if (deleteDecl) decl.remove();
+            let noWebp = rule.clone();
+            noWebp.each((i: Declaration) => {
+              if (i.prop !== decl.prop && i.value !== decl.value) {
+                i.remove();
+              } else {
+                if (minifyMap.has(i.prop)) {
+                  i.value = minifyMap.get(i.prop);
+                }
+              }
+            });
+            noWebp.selectors = noWebp.selectors.map((i) =>
+              addClass(i, noWebpClass)
+            );
+            rule.after(noWebp);
+          }
+
+          if (hasWebp) decl.remove();
           if (rule.nodes.length === 0) rule.remove();
         }
       },
