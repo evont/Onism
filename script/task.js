@@ -11,7 +11,7 @@ glob(
   {
     cwd: path.resolve(process.cwd(), "packages"),
   },
-  (err, files) => {
+  async (err, files) => {
     const packages = {};
     files.forEach((p) => {
       try {
@@ -27,35 +27,39 @@ glob(
       }
     });
 
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "package",
-          message: "Please select the package to run your task",
-          choices: Object.keys(packages),
-        },
-        {
-          type: "list",
-          name: "command",
-          default: "start",
-          message: "Please select the command you want to run",
-          choices: (answer) => {
-            return packages[answer.package];
-          },
-        },
-      ])
-      .then((answers) => {
-        const { package, command } = answers;
-        const sp = spawn(
-          "pnpm",
-          [command, "--filter", `@onism/${package}`],
-          {
-            stdio: "pipe",
-            env: Object.assign(process.env, { FORCE_COLOR: true }),
+    const { packages: selectPackages } = await inquirer.prompt([
+      {
+        type: "checkbox",
+        name: "packages",
+        message: "Please choose packages to run your task",
+        choices: Object.keys(packages),
+        validate(answer) {
+          if (!answer.length) {
+            return 'You muse choose at lease one package'
           }
-        );
-        sp.stdout.pipe(process.stdout);
+          return true;
+        }
+      },
+    ]);
+    const questions = [];
+    for (const package of selectPackages) {
+      questions.push({
+        type: "list",
+        choices: packages[package],
+        name: package,
+        message: `Please select the task command of ${package}`,
       });
+    }
+    const matchCMD = await inquirer.prompt(questions);
+    const spawnParam = [];
+    for (const pkg in matchCMD) {
+      const cmd = matchCMD[pkg];
+      spawnParam.push(cmd, "--filter", `@onism/${pkg}`);
+    }
+    spawn("pnpm", spawnParam, {
+      stdio: "inherit",
+      // env: Object.assign(process.env, { FORCE_COLOR: true }),
+    });
+    // sp.stdout.pipe(process.stdout);
   }
 );

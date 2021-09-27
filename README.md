@@ -6,11 +6,16 @@
 
 ## Contributing
 
-Contributions are always welcome!
+This repo is using [pnpm](https://pnpm.io/) to maintain the mono repo, in order to run script, you should [install pnpm](installation) globally, and get back this project.
+
+Run script below to startup the project
 
 ```bash
 git clone git@github.com:evont/Onism.git
-
-lerna bootstrap
+pnpm i
 ```
-  
+
+Run `task` script, you can select which package should and which script you want to run.
+```bash
+npm run task #clean
+```

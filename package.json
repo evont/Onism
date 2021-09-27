@@ -10,7 +10,8 @@
   },
   "scripts": {
     "cz": "git-cz",
-    "run-task": "node ./script/task.js"
+    "task": "node ./script/task.js",
+    "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' +"
   },
   "config": {
     "commitizen": {
