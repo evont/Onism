@@ -8,11 +8,11 @@ html {
   display: flex;
   justify-content: center;
   background: url(@assets/image/p4.jpeg) no-repeat center/420px, url(@assets/image/p5.jpeg) no-repeat center/340px;
+  margin: 12px;
+  padding: 20px;
 }
 
 #app2 {
-  margin: 12px;
-  padding: 20px;
   background: url(@assets/image/p1.png) no-repeat center/420px;
 }
 
@@ -31,4 +31,8 @@ html {
   position: absolute;
   left: 0;
   right: 30px;
+}
+
+#testtt {
+
 }

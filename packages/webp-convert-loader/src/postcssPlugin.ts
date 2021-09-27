@@ -1,86 +1,118 @@
 import { Declaration, PluginCreator, Rule } from "postcss";
 import valueParser, { FunctionNode } from "postcss-value-parser";
 import { getHashDigest } from "loader-utils";
-// import { transformAlias, startsWith } from "./util";
-// import * as path from "path";
-// import * as fs from "fs-extra";
-import sharp from "sharp";
-// const targets = {
-//   ".png": "oxipng",
-//   ".jpg": "mozjpeg",
-//   ".jpeg": "mozjpeg",
-//   ".jxl": "jxl",
-//   ".webp": "webp",
-//   ".avif": "avif",
-//   // ...minifyOptions.targets,
-// };
+import { ImagePool } from "@squoosh/lib";
+import * as path from "path";
+import * as fs from "fs-extra";
+const targets = {
+  ".png": "oxipng",
+  ".jpg": "mozjpeg",
+  ".jpeg": "mozjpeg",
+  ".jxl": "jxl",
+  ".webp": "webp",
+  ".avif": "avif",
+  // ...minifyOptions.targets,
+};
 
-async function convertToWebp(url, loaderContext) {
-  try {
-    const imagePath = await new Promise<string>((resolve, reject) =>
-      loaderContext.resolve(loaderContext.context, url, (err, result) =>
-        err ? reject(err) : resolve(result)
-      )
-    );
-    const old = await sharp(imagePath);
-    const {
-      info: { size },
-      data: oldData,
-      hash,
-    } = await new Promise((resolve, reject) => {
-      old.toBuffer((err, data, info) => {
-        if (err) reject(err);
-        const hash = getHashDigest(data);
-        resolve({
-          data,
-          info,
-          hash,
-        });
-      });
-    });
+function genImage({ formate, binary, url, imagePath, _compilation }) {
+  const hash = getHashDigest(binary);
 
-    const webp = await old.webp({
-      lossless: true,
-    });
-
-    const {
-      info: { size: webpSize },
-      data: webpData,
-      hash: webpHash,
-    } = await new Promise((resolve, reject) => {
-      webp.toBuffer((err, data, info) => {
-        if (err) reject(err);
-        const hash = getHashDigest(data);
-        resolve({
-          data,
-          info,
-          hash,
-        });
-      });
-    });
-
-    if (webpSize < size) {
-      const imgName = `${imagePath}.webp`;
-      await webp.toFile(imgName);
-      return {
-        hash,
-        webpHash,
-        imgName,
-      };
-    }
-    return null;
-  } catch (err) {
-    console.error(err);
-    console.error(`${url} is not found`);
-  }
+  const { path: urlPath } = _compilation.getPathWithInfo(formate, {
+    filename: url,
+  });
+  const { path: filePath } = _compilation.getPathWithInfo(formate, {
+    filename: imagePath,
+  });
+  fs.outputFileSync(filePath, binary);
+  return {
+    hash,
+    urlPath,
+    filePath,
+  };
 }
 export default ({ loaderContext, options = {} }) => {
+  const _compilation = loaderContext._compilation;
+  async function convertToWebp(url) {
+    try {
+      const imagePath = await new Promise<string>((resolve, reject) =>
+        loaderContext.resolve(loaderContext.context, url, (err, result) =>
+          err ? reject(err) : resolve(result)
+        )
+      );
+
+      const imagePool = new ImagePool();
+      const image = imagePool.ingestImage(imagePath);
+      const ext = path.extname(imagePath).toLowerCase();
+      const targetCodec = targets[ext];
+      const encodeOptions = {
+        [targetCodec]: {},
+        webp: {},
+        // ...minifyOptions.encodeOptions,
+      };
+      const { size } = await image.decoded;
+      await image.preprocess({
+        quant: {
+          numColors: 256,
+          dither: 0.5,
+        },
+      });
+      await image.encode(encodeOptions);
+      await imagePool.close();
+      const rawImage = await image.encodedWith[targetCodec];
+      const rawImageInWebp = await image.encodedWith.webp;
+
+      const result: {
+        hash?: string;
+        urlPath?: string;
+        filePath?: string;
+        webpHash?: string;
+        webpUrlPath?: string;
+        webpFilePath?: string;
+      } = {};
+      if (rawImage.size < size) {
+        Object.assign(
+          result,
+          genImage({
+            binary: rawImage.binary,
+            formate: "[path]minify/[name][ext]",
+            url,
+            imagePath,
+            _compilation,
+          })
+        );
+      }
+
+      if (rawImageInWebp.size < rawImage.size) {
+        const {
+          hash: webpHash,
+          urlPath: webpUrlPath,
+          filePath: webpFilePath,
+        } = genImage({
+          binary: rawImageInWebp.binary,
+          formate: "[path]webp/[name][ext].webp",
+          url,
+          imagePath,
+          _compilation,
+        });
+        Object.assign(result, {
+          webpHash,
+          webpUrlPath,
+          webpFilePath,
+        });
+      }
+      return result;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   const DEFAULT_OPTIONS = {
     modules: false,
     noWebpClass: "no-webp",
     webpClass: "webp",
     addNoJs: true,
     noJsClass: "no-js",
+    filename: "",
   };
   let { modules, noWebpClass, webpClass, addNoJs, noJsClass } = {
     ...DEFAULT_OPTIONS,
@@ -129,9 +161,39 @@ export default ({ loaderContext, options = {} }) => {
             return;
           }
 
+          const minifyMap = new Map();
+          const webpMap = new Map();
+          for (const node of rule.nodes) {
+            const i = node as Declaration;
+            const { nodes } = valueParser(i.value);
+
+            for (const node of nodes) {
+              if (node.value === "url") {
+                const [urlNode] = (node as FunctionNode).nodes;
+                const url = urlNode.value;
+                const { urlPath, webpUrlPath } = await convertToWebp(url);
+                if (urlPath) {
+                  const oldValue = minifyMap.get(i.prop) || i.value;
+                  minifyMap.set(i.prop, oldValue.replace(url, urlPath));
+                }
+                if (webpUrlPath) {
+                  const oldValue = webpMap.get(i.prop) || i.value;
+                  webpMap.set(i.prop, oldValue.replace(url, webpUrlPath));
+                }
+              }
+            }
+          }
+          let deleteDecl = false;
           let noWebp = rule.cloneAfter();
           noWebp.each((i: Declaration) => {
-            if (i.prop !== decl.prop && i.value !== decl.value) i.remove();
+            if (i.prop !== decl.prop && i.value !== decl.value) {
+              i.remove();
+            } else {
+              if (minifyMap.has(i.prop)) {
+                deleteDecl = true;
+                i.value = minifyMap.get(i.prop);
+              }
+            }
           });
           noWebp.selectors = noWebp.selectors.map((i) =>
             addClass(i, noWebpClass)
@@ -139,25 +201,18 @@ export default ({ loaderContext, options = {} }) => {
 
           let webp = rule.cloneAfter();
           webp.each((i: Declaration) => {
-            if (i.prop !== decl.prop && i.value !== decl.value) i.remove();
-          });
-          webp.selectors = webp.selectors.map((i) => addClass(i, webpClass));
-          for (const node of webp.nodes) {
-            const i = node as Declaration;
-            const { nodes } = valueParser(decl.value);
-            for (const node of nodes) {
-              if (node.value === "url") {
-                const [urlNode] = (node as FunctionNode).nodes;
-                const url = urlNode.value;
-                const converResult = await convertToWebp(url, loaderContext);
-                if (converResult) {
-                  const { imgName } = converResult;
-                  i.value = i.value.replace(url, imgName);
-                }
+            if (i.prop !== decl.prop && i.value !== decl.value) {
+              i.remove();
+            } else {
+              if (webpMap.has(i.prop)) {
+                deleteDecl = true;
+                i.value = webpMap.get(i.prop);
               }
             }
-          }
-          decl.remove();
+          });
+          webp.selectors = webp.selectors.map((i) => addClass(i, webpClass));
+
+          if (deleteDecl) decl.remove();
           if (rule.nodes.length === 0) rule.remove();
         }
       },

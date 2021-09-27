@@ -6,7 +6,7 @@
 
 ## Contributing
 
-This repo is using [pnpm](https://pnpm.io/) to maintain the mono repo, in order to run script, you should [install pnpm](installation) globally, and get back this project.
+This repo is using [pnpm](https://pnpm.io/) to maintain the mono repo, in order to run script, you should [install pnpm](https://pnpm.io/installation) globally, and get back this project.
 
 Run script below to startup the project
 

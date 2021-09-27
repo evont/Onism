@@ -15,7 +15,7 @@
   },
   "config": {
     "commitizen": {
-      "path": "./node_modules/cz-lerna-changelog"
+      "path": "./node_modules/cz-conventional-emoji"
     }
   },
   "husky": {
@@ -39,7 +39,7 @@
     "@types/node": "^16.9.1",
     "commitizen": "^4.2.4",
     "cross-env": "^7.0.3",
-    "cz-lerna-changelog": "^2.0.3",
+    "cz-conventional-emoji": "^1.0.2",
     "fs-extra": "^10.0.0",
     "glob": "^7.1.7",
     "husky": "^7.0.2",
@@ -47,5 +47,9 @@
     "lint-staged": "^11.1.2",
     "standard": "^16.0.3",
     "typescript": "^4.4.3"
+  },
+  "dependencies": {
+    "loader-utils": "^2.0.0",
+    "postcss": "^8.3.8"
   }
 }
