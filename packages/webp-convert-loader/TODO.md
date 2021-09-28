@@ -1,7 +1,0 @@
-- [ ] css module 参数（是否开启module）
-- [ ] selectors 都要加
-- [ ] rename 规则，目录当前限制在同一目录
-- [ ] squoosh vs imagemin, squoosh 目前速度较慢，imagemin 压缩比率较低
-- [ ] 判定webp 大小是否小于原图（低于百分比？还是一旦小就用）
-- [ ] 使用 webpack plugin 完成
-- [ ] polyfill 外置

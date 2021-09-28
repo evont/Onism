@@ -1,6 +1,6 @@
 import { Declaration, PluginCreator, Rule } from "postcss";
 import valueParser, { FunctionNode } from "postcss-value-parser";
-import { getHashDigest } from "loader-utils";
+import { getHashDigest, interpolateName } from "loader-utils";
 import { ImagePool } from "@squoosh/lib";
 import * as path from "path";
 import * as fs from "fs-extra";
@@ -14,24 +14,53 @@ const targets = {
   // ...minifyOptions.targets,
 };
 
-function genImage({ formate, binary, url, imagePath, _compilation }) {
-  const hash = getHashDigest(binary);
-
-  const { path: urlPath } = _compilation.getPathWithInfo(formate, {
-    filename: url,
-  });
-  const { path: filePath } = _compilation.getPathWithInfo(formate, {
-    filename: imagePath,
-  });
-  fs.outputFileSync(filePath, binary);
-  return {
-    hash,
-    urlPath,
-    filePath,
-  };
-}
 export default ({ loaderContext, options = {} }) => {
   const _compilation = loaderContext._compilation;
+
+  const DEFAULT_OPTIONS = {
+    modules: false,
+    noWebpClass: "no-webp",
+    webpClass: "webp",
+    addNoJs: false,
+    noJsClass: "no-js",
+    minifyFormate: "minify/[name][ext]",
+    webpFormate: "webp/[name][ext].webp",
+  };
+  let {
+    modules,
+    noWebpClass,
+    webpClass,
+    addNoJs,
+    noJsClass,
+    minifyFormate,
+    webpFormate,
+  } = {
+    ...DEFAULT_OPTIONS,
+    ...options,
+  };
+
+  function generateImage({ formate, binary, url, imagePath }) {
+    const hash = getHashDigest(binary);
+    let { path: urlPath } = _compilation.getPathWithInfo(formate, {
+      filename: url,
+    });
+    let { path: filePath } = _compilation.getPathWithInfo(formate, {
+      filename: imagePath,
+    });
+    if (!path.isAbsolute(filePath)) {
+      filePath = path.resolve(path.dirname(imagePath), filePath);
+    }
+    if (!path.isAbsolute(urlPath)) {
+      urlPath = path.join(path.dirname(url), urlPath);
+    }
+    fs.outputFileSync(filePath, binary);
+    return {
+      hash,
+      urlPath,
+      filePath,
+    };
+  }
+
   async function convertToWebp(url) {
     try {
       const imagePath = await new Promise<string>((resolve, reject) =>
@@ -72,12 +101,11 @@ export default ({ loaderContext, options = {} }) => {
       if (rawImage.size < size) {
         Object.assign(
           result,
-          genImage({
+          generateImage({
             binary: rawImage.binary,
-            formate: "[path]minify/[name][ext]",
+            formate: minifyFormate,
             url,
             imagePath,
-            _compilation,
           })
         );
       }
@@ -87,12 +115,11 @@ export default ({ loaderContext, options = {} }) => {
           hash: webpHash,
           urlPath: webpUrlPath,
           filePath: webpFilePath,
-        } = genImage({
+        } = generateImage({
           binary: rawImageInWebp.binary,
-          formate: "[path]webp/[name][ext].webp",
+          formate: webpFormate,
           url,
           imagePath,
-          _compilation,
         });
         Object.assign(result, {
           webpHash,
@@ -106,21 +133,10 @@ export default ({ loaderContext, options = {} }) => {
     }
   }
 
-  const DEFAULT_OPTIONS = {
-    modules: false,
-    noWebpClass: "no-webp",
-    webpClass: "webp",
-    addNoJs: true,
-    noJsClass: "no-js",
-    filename: "",
-  };
-  let { modules, noWebpClass, webpClass, addNoJs, noJsClass } = {
-    ...DEFAULT_OPTIONS,
-    ...options,
-  };
   function removeHtmlPrefix(className) {
     return className.replace(/html ?\./, "");
   }
+
   function addClass(selector, className) {
     let generatedNoJsClass;
     let initialClassName = className;
@@ -146,6 +162,7 @@ export default ({ loaderContext, options = {} }) => {
     }
     return selector;
   }
+
   const PostcssPlugin: PluginCreator<{}> = function () {
     return {
       postcssPlugin: "webp-connvert-parser",
@@ -212,15 +229,17 @@ export default ({ loaderContext, options = {} }) => {
               addClass(i, noWebpClass)
             );
             rule.after(noWebp);
+
+            decl.remove();
           }
 
-          if (hasWebp) decl.remove();
           if (rule.nodes.length === 0) rule.remove();
         }
       },
     };
   };
   PostcssPlugin.postcss = true;
+
   return {
     PostcssPlugin,
   };

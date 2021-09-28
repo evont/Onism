@@ -7,12 +7,12 @@ module.exports = {
   entry: "./src/index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
-    publicPath: "./"
+    publicPath: "./",
   },
   resolveLoader: {
     alias: {
-      'webp-convert-loader': path.resolve(__dirname, '../lib')
-    }
+      "webp-convert-loader": path.resolve(__dirname, "../lib"),
+    },
   },
   resolve: {
     alias: {
@@ -20,7 +20,6 @@ module.exports = {
       "@": path.resolve("./src"),
       _$: path.resolve("./src"),
     },
-
   },
   // watch: true,
   stats: "minimal",
@@ -34,11 +33,14 @@ module.exports = {
           {
             loader: "webp-convert-loader",
             options: {
-              outputPath: "@assets/webp",
-            }
-          }
+              addNoJs: false,
+              noWebpClass: "nowebp",
+              minifyFormate: "minify/[name]_minify[ext]",
+              webpFormate: "webp/[name].webp",
+            },
+          },
         ],
-      }
+      },
     ],
   },
   plugins: [
