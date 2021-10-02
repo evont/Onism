@@ -1,9 +1,9 @@
 {
   "name": "@onism/webp-convert-loader",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "webpack loader that convert image to webp & generate css",
   "author": "evont <evontgoh@foxmail.com>",
-  "homepage": "https://github.com/evont/Onism#readme",
+  "homepage": "https://github.com/evont/Onism/tree/master/packages/webp-convert-loader",
   "license": "MIT",
   "main": "./lib/index.js",
   "module": "./es/index.js",

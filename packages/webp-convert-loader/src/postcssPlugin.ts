@@ -1,6 +1,6 @@
 import { Declaration, PluginCreator, Rule } from "postcss";
 import valueParser, { FunctionNode } from "postcss-value-parser";
-import { getHashDigest, interpolateName } from "loader-utils";
+import { getHashDigest } from "loader-utils";
 import { ImagePool } from "@squoosh/lib";
 import * as path from "path";
 import * as fs from "fs-extra";
@@ -25,6 +25,8 @@ export default ({ loaderContext, options = {} }) => {
     noJsClass: "no-js",
     minifyFormate: "minify/[name][ext]",
     webpFormate: "webp/[name][ext].webp",
+    encodeOption: {},
+    quant: {}
   };
   let {
     modules,
@@ -34,6 +36,8 @@ export default ({ loaderContext, options = {} }) => {
     noJsClass,
     minifyFormate,
     webpFormate,
+    encodeOption,
+    quant
   } = {
     ...DEFAULT_OPTIONS,
     ...options,
@@ -73,17 +77,20 @@ export default ({ loaderContext, options = {} }) => {
       const image = imagePool.ingestImage(imagePath);
       const ext = path.extname(imagePath).toLowerCase();
       const targetCodec = targets[ext];
-      const encodeOptions = {
+      const encodeOptions = Object.assign({
         [targetCodec]: {},
         webp: {},
         // ...minifyOptions.encodeOptions,
-      };
+      }, encodeOption);
+      // in case webp convert is disabled by mistake
+      if (!encodeOptions.webp) encodeOptions.webp = {}
       const { size } = await image.decoded;
+      const preProcessQuant = Object.assign({
+        numColors: 255,
+        dither: 1.0
+      }, quant);
       await image.preprocess({
-        quant: {
-          numColors: 256,
-          dither: 0.5,
-        },
+        quant: preProcessQuant
       });
       await image.encode(encodeOptions);
       await imagePool.close();

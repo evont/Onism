@@ -33,10 +33,20 @@ module.exports = {
           {
             loader: "webp-convert-loader",
             options: {
-              addNoJs: false,
-              noWebpClass: "nowebp",
               minifyFormate: "minify/[name]_minify[ext]",
               webpFormate: "webp/[name].webp",
+              encodeOption: {
+                oxipng: {
+                  level: 4
+                },
+                mozjpeg: {
+                  quality: 60
+                }
+              },
+              quant: {
+                numColors: 255,
+                dither: 0.7
+              }
             },
           },
         ],

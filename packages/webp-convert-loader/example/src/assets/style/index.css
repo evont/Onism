@@ -25,14 +25,10 @@ html {
   background-color: #ccc;
 }
 
-#app4::after {
+/* #app4::after {
   content: url(@assets/image/p1.png);
   display: block;
   position: absolute;
   left: 0;
   right: 30px;
-}
-
-#testtt {
-
-}
+} */

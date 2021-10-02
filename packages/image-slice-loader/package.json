@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "a loader to slice long image & generate css background",
   "author": "evont <evontgoh@foxmail.com>",
-  "homepage": "https://github.com/evont/Onism#readme",
+  "homepage": "https://github.com/evont/Onism/tree/master/packages/image-slice-loader",
   "license": "MIT",
   "main": "./lib/index.js",
   "module": "./es/index.js",
