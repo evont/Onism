@@ -1,4 +1,4 @@
-# image-slice-loader
+# `@onism/image-slice-loader`
 
 Tool that cut image slices from long image.
 
@@ -6,10 +6,10 @@ Tool that cut image slices from long image.
 
 ## Getting Started
 
-To begin, you'll need to install `image-slice-loader`
+To begin, you'll need to install `@onism/image-slice-loader`
 
 ```bash
-npm install --save-dev image-slice-loader
+npm install --save-dev @onism/image-slice-loader
 ```
 
 ### **As a Loader**
