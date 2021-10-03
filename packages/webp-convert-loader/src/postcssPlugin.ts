@@ -47,9 +47,11 @@ export default ({ loaderContext, options = {} }) => {
     const hash = getHashDigest(binary);
     let { path: urlPath } = _compilation.getPathWithInfo(formate, {
       filename: url,
+      hash,
     });
     let { path: filePath } = _compilation.getPathWithInfo(formate, {
       filename: imagePath,
+      hash
     });
     if (!path.isAbsolute(filePath)) {
       filePath = path.resolve(path.dirname(imagePath), filePath);

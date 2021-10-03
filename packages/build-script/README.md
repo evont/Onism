@@ -1,8 +1,10 @@
-# Script build
+# `@onism/build-script`
+
+Tool that compile scripts into `ES Module` & `commonjs` formate.
 
 ## Usage
 
-add  `cafune-build [options]` script to `package.json`
+add  `onism-build [options]` script to `package.json`
 
 **Options**:
 | short param | full param |description | default |
