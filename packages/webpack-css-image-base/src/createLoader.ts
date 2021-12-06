@@ -7,8 +7,8 @@ export default function createLoader(getPlugin, onSuccess) {
     const callback = this?.async();
     this?.cacheable();
     const options: ProcessOptions = {
-      to: this.resourcePath,
-      from: this.resourcePath,
+      to: this?.resourcePath,
+      from: this?.resourcePath,
     };
     if (meta && meta.sourceRoot && meta.mappings) {
       options.map = {
@@ -25,7 +25,7 @@ export default function createLoader(getPlugin, onSuccess) {
       .then((result) => {
         const map = result.map && result.map.toJSON();
         callback(null, result.css, map);
-        onSuccess(result)
+        onSuccess && onSuccess(result)
         return null;
       })
       .catch((error) => {

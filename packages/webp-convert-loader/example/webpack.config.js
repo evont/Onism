@@ -2,6 +2,9 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+
+const { WebpConvertPlugin } = require("../lib/index");
+console.log(WebpConvertPlugin);
 module.exports = {
   mode: "production",
   entry: "./src/index.js",
@@ -55,6 +58,7 @@ module.exports = {
     ],
   },
   plugins: [
+    new WebpConvertPlugin(),
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({

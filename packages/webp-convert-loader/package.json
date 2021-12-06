@@ -29,6 +29,7 @@
     "@onism/build-script": "workspace:*"
   },
   "dependencies": {
+    "@onism/webpack-css-image-base": "workspace:*",
     "@squoosh/lib": "^0.4.0",
     "fs-extra": "^10.0.0",
     "postcss-value-parser": "^4.1.0",
