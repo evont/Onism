@@ -4,7 +4,6 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 const { WebpConvertPlugin } = require("../lib/index");
-console.log(WebpConvertPlugin);
 module.exports = {
   mode: "production",
   entry: "./src/index.js",

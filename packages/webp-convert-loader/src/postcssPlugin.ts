@@ -4,6 +4,9 @@ import { getHashDigest } from "loader-utils";
 import { ImagePool } from "@squoosh/lib";
 import * as path from "path";
 import * as fs from "fs-extra";
+
+import { PLUGIN_NAME } from "./constants";
+
 const targets = {
   ".png": "oxipng",
   ".jpg": "mozjpeg",
@@ -16,6 +19,8 @@ const targets = {
 
 export default ({ loaderContext, options = {} }) => {
   const _compilation = loaderContext._compilation;
+
+  console.log('PLUGIN_NAME', loaderContext[PLUGIN_NAME]);
 
   const DEFAULT_OPTIONS = {
     modules: false,
