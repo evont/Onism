@@ -1,8 +1,14 @@
-'use strict';
+import { Dependency } from 'webpack';
 
-const NullDependency = require('webpack/lib/dependencies/NullDependency');
-
-export class ReplaceDependency extends NullDependency {
+export class ReplaceDependency extends Dependency {
+    replaceRanges;
+    static Template = {
+        apply(dep, source, outputOptions, requestShortener) {
+            const ranges = dep.replaceRanges;
+            for (const range of ranges)
+                source.replace(range[0], range[1], range[2]);
+        },
+    };
     constructor(replaceRanges) {
         super();
         this.replaceRanges = replaceRanges;
@@ -16,12 +22,3 @@ export class ReplaceDependency extends NullDependency {
         hash.update(this.replaceRanges + '');
     }
 }
-
-ReplaceDependency.Template = {
-    apply(dep, source, outputOptions, requestShortener) {
-        const ranges = dep.replaceRanges;
-        for (const range of ranges)
-            source.replace(range[0], range[1], range[2]);
-    },
-};
-

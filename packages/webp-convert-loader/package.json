@@ -26,7 +26,8 @@
     "url": "https://github.com/evont/Onism/issues"
   },
   "devDependencies": {
-    "@onism/build-script": "workspace:*"
+    "@onism/build-script": "workspace:*",
+    "webpack": "^5.65.0"
   },
   "dependencies": {
     "@onism/webpack-css-image-base": "workspace:*",

@@ -3,18 +3,13 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
-const { WebpConvertPlugin } = require("../lib/index");
+const { WebpConvertPlugin } = require("@onism/webp-convert-loader");
 module.exports = {
   mode: "production",
   entry: "./src/index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
     publicPath: "./",
-  },
-  resolveLoader: {
-    alias: {
-      "webp-convert-loader": path.resolve(__dirname, "../lib"),
-    },
   },
   resolve: {
     alias: {
@@ -33,7 +28,7 @@ module.exports = {
           MiniCssExtractPlugin.loader,
           "css-loader",
           {
-            loader: "webp-convert-loader",
+            loader: "@onism/webp-convert-loader",
             options: {
               modules: true,
               minifyFormate: "minify/[name]_minify[ext]",
