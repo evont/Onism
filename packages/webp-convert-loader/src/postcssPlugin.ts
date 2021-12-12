@@ -20,6 +20,11 @@ const targets = {
 function genID() {
   return Math.random().toString(16).substr(2);
 }
+
+function removeHtmlPrefix(className) {
+  return className.replace(/html ?\./, "");
+}
+
 export default ({ loaderContext, options = {} }) => {
   // const _compilation = loaderContext._compilation;
 
@@ -52,18 +57,45 @@ export default ({ loaderContext, options = {} }) => {
     ...options,
   };
 
+  function addClass(selector, className) {
+    let generatedNoJsClass;
+    let initialClassName = className;
+    if (className.includes("html")) {
+      className = removeHtmlPrefix(className);
+    }
+    if (modules) {
+      className = `:global(.${className})`;
+      generatedNoJsClass = `:global(.${noJsClass})`;
+    } else {
+      className = `.${className}`;
+      generatedNoJsClass = `.${noJsClass}`;
+    }
+    if (selector.includes("html")) {
+      selector = selector.replace(/html[^ ]*/, `$& body${className}`);
+    } else {
+      selector = `body${className} ` + selector;
+    }
+    if (addNoJs && initialClassName === noWebpClass) {
+      selector +=
+        ", " +
+        selector.split(`body${className}`).join(`body${generatedNoJsClass}`);
+    }
+    return selector;
+  }
+  const ruleMap = new Map();
   const PostcssPlugin: PluginCreator<{}> = function () {
     return {
       postcssPlugin: "webp-connvert-parser",
       async Declaration(decl) {
         if (/\.(jpe?g|png)(?!(\.webp|.*[&?]format=webp))/i.test(decl.value)) {
-          let rule = decl.parent as Rule;
+          const rule = decl.parent as Rule;
+
           const parsed = valueParser(decl.value);
           const { nodes } = parsed;
           for (const node of nodes) {
             if (node.value === "url") {
-              const [urlNode] = (node as FunctionNode).nodes;
-              const url = urlNode.value;
+              const [{ value: url }] = (node as FunctionNode).nodes;
+              // const url = urlNode.value;
               try {
                 const imagePath = await new Promise<string>((resolve, reject) =>
                   loaderContext.resolve(
@@ -72,30 +104,45 @@ export default ({ loaderContext, options = {} }) => {
                     (err, result) => (err ? reject(err) : resolve(result))
                   )
                 );
-                
-                const webpRule = rule.clone();
-                webpRule.each((i: Declaration) => {
-                  if (i.prop !== decl.prop && i.value !== decl.value) i.remove()
-                })
-
-                
-                const id = genID();
-                const webpHolder = `WEBP_HOLDER_${id}`;
-                data[id] = {
-                  url,
-                  imagePath,
-                  webp: {
-                    rule: webpRule,
-                    replace: webpHolder
-                  }
-                }
-
-                rule.append(`/** ${webpHolder} **/`)
               } catch (err) {
                 void err;
               }
             }
           }
+
+          let ruleCache = ruleMap.get(rule);
+          if (!ruleCache) {
+            const webpRule = rule.clone();
+            webpRule.removeAll();
+            webpRule.selectors = webpRule.selectors.map((i) =>
+              addClass(i, webpClass)
+            );
+
+            webpRule.append({ prop: "background-image", value: "webp" });
+            rule.after(webpRule);
+
+            const noWebpRule = rule.clone();
+            noWebpRule.removeAll();
+            noWebpRule.selectors = noWebpRule.selectors.map((i) =>
+              addClass(i, noWebpClass)
+            );
+            noWebpRule.append({ prop: "background-image", value: "nowebp" });
+            rule.after(noWebpRule);
+
+            ruleMap.set(rule, {
+              webpRule,
+              noWebpRule
+            });
+
+          } else {
+            console.log(ruleCache);
+            ruleCache.webpRule.append({ prop: "background-image", value: "cache webp" });
+            ruleCache.noWebpRule.append({ prop: "background-image", value: "cache nowebp" });
+          }
+
+          // const id = genID();
+          // const webpHolder = `WEBP_HOLDER_${id}`;
+          // rule.append(`/** ${webpHolder} **/`);
         }
       },
     };

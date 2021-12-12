@@ -72,11 +72,11 @@ class WebpConvertPlugin {
       }
 
       this.plugin(compilation, "optimizeTree", (chunks, modules, callback) =>
-        this.replaceInModules(chunks, compilation)
+        this.optimizeTree(compilation, chunks, modules, callback)
       );
 
       this.plugin(compilation, "afterOptimizeTree", (chunks, modules) => {
-        console.log("afterOptimizeTree");
+        this.replaceInModules(chunks, compilation)
       });
 
       try {
@@ -91,38 +91,47 @@ class WebpConvertPlugin {
             // Object.entries(assets).forEach(([pathname, source]) => {
             //   console.log(`— ${pathname}: ${source.size()} bytes`);
             // });
+            // console.log(assets);
           }
         );
       } catch (e) {
         this.plugin(compilation, "optimizeChunkAssets", (chunks, callback) => {
           console.log("optimizeChunkAssets");
+          this.replaceInCSSAssets(chunks, compilation);
           callback();
         });
       }
     });
   }
 
+  replaceInCSSAssets(chunks, compilation) {
+
+  }
+  optimizeTree(compilation, chunks, modules, callback) {
+
+    callback();
+  }
   replaceInModules(chunks, compilation) {
     const allModules = getAllModules(compilation);
     allModules.forEach((module: any) => {
       const identifier = module.identifier();
-      if (/^css[\s]+/g.test(identifier)) {
-        console.log(identifier);
-      } else {
-        const source = module._source;
-        let ranges = [];
-        const replaceDependency = module.dependencies.filter(
-          (dependency) => dependency.constructor === ReplaceDependency
-        )[0];
-        if (typeof source === "string")
-          ranges = this.replaceHolderToRanges(source);
-        else if (source instanceof Object && typeof source._value === "string")
-          ranges = this.replaceHolderToRanges(source._value);
-        if (ranges.length) {
-          if (replaceDependency) replaceDependency.updateRanges(ranges);
-          else module.addDependency(new ReplaceDependency(ranges));
-        }
-      }
+      // if (/^css[\s]+/g.test(identifier)) {
+      //   console.log(identifier);
+      // } else {
+      //   const source = module._source;
+      //   let ranges = [];
+      //   const replaceDependency = module.dependencies.filter(
+      //     (dependency) => dependency.constructor === ReplaceDependency
+      //   )[0];
+      //   if (typeof source === "string")
+      //     ranges = this.replaceHolderToRanges(source);
+      //   else if (source instanceof Object && typeof source._value === "string")
+      //     ranges = this.replaceHolderToRanges(source._value);
+      //   if (ranges.length) {
+      //     if (replaceDependency) replaceDependency.updateRanges(ranges);
+      //     else module.addDependency(new ReplaceDependency(ranges));
+      //   }
+      // }
     });
     // for (const [key, value] of Object.entries(this.data)) {
     //   console.log(key, value.webp.toString());

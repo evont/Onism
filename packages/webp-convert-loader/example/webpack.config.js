@@ -30,7 +30,7 @@ module.exports = {
           {
             loader: "@onism/webp-convert-loader",
             options: {
-              modules: true,
+              // modules: true,
               minifyFormate: "minify/[name]_minify[ext]",
               webpFormate: "webp/[name].[contenthash:8].webp",
               // encodeOption: {
