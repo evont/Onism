@@ -82,7 +82,6 @@ export default ({ loaderContext, options = {} }) => {
     }
     return selector;
   }
-  const ruleMap = new Map();
   const PostcssPlugin: PluginCreator<{}> = function () {
     return {
       postcssPlugin: "webp-connvert-parser",
@@ -92,57 +91,51 @@ export default ({ loaderContext, options = {} }) => {
 
           const parsed = valueParser(decl.value);
           const { nodes } = parsed;
+          const images = [];
           for (const node of nodes) {
             if (node.value === "url") {
               const [{ value: url }] = (node as FunctionNode).nodes;
               // const url = urlNode.value;
-              try {
-                const imagePath = await new Promise<string>((resolve, reject) =>
-                  loaderContext.resolve(
-                    loaderContext.context,
-                    url,
-                    (err, result) => (err ? reject(err) : resolve(result))
-                  )
-                );
-              } catch (err) {
-                void err;
-              }
+              images.push(url);
             }
           }
 
-          let ruleCache = ruleMap.get(rule);
-          if (!ruleCache) {
-            const webpRule = rule.clone();
+          await Promise.all(
+            images.map(
+              (image) =>
+                new Promise((resolve, reject) => {
+                  loaderContext.resolve(
+                    loaderContext.context,
+                    image,
+                    (err, result) => (err ? reject(err) : resolve(result))
+                  );
+                })
+            )
+          ).then((filePaths) => {
+            const id = genID();
+            console.log(rule.selector, filePaths);
+            data[id] = {
+              filePaths,
+            };
+            let webpRule;
+            let noWebpRule;
+            webpRule = rule.clone();
             webpRule.removeAll();
             webpRule.selectors = webpRule.selectors.map((i) =>
               addClass(i, webpClass)
             );
 
-            webpRule.append({ prop: "background-image", value: "webp" });
-            rule.after(webpRule);
+            rule.after(`/* WEBP_HOLDER_${id} **/`);
 
-            const noWebpRule = rule.clone();
+            noWebpRule = rule.clone();
             noWebpRule.removeAll();
             noWebpRule.selectors = noWebpRule.selectors.map((i) =>
               addClass(i, noWebpClass)
             );
-            noWebpRule.append({ prop: "background-image", value: "nowebp" });
-            rule.after(noWebpRule);
 
-            ruleMap.set(rule, {
-              webpRule,
-              noWebpRule
-            });
+            rule.after(`/* NO_WEBP_HOLDER_${id} **/`);
 
-          } else {
-            console.log(ruleCache);
-            ruleCache.webpRule.append({ prop: "background-image", value: "cache webp" });
-            ruleCache.noWebpRule.append({ prop: "background-image", value: "cache nowebp" });
-          }
-
-          // const id = genID();
-          // const webpHolder = `WEBP_HOLDER_${id}`;
-          // rule.append(`/** ${webpHolder} **/`);
+          });
         }
       },
     };
