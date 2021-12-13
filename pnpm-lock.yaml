@@ -83,12 +83,14 @@ importers:
       postcss-value-parser: ^4.1.0
       sharp: ^0.29.1
       webpack: ^5.65.0
+      webpack-sources: ^3.2.2
     dependencies:
       '@onism/webpack-css-image-base': link:../webpack-css-image-base
       '@squoosh/lib': registry.npmmirror.com/@squoosh/lib/0.4.0
       fs-extra: 10.0.0
       postcss-value-parser: 4.1.0
       sharp: registry.npmmirror.com/sharp/0.29.1
+      webpack-sources: registry.npmmirror.com/webpack-sources/3.2.2
     devDependencies:
       '@onism/build-script': link:../build-script
       webpack: registry.npmmirror.com/webpack/5.65.0
@@ -6441,7 +6443,6 @@ packages:
     name: webpack-sources
     version: 3.2.2
     engines: {node: '>=10.13.0'}
-    dev: true
 
   registry.npmmirror.com/webpack/5.65.0:
     resolution: {integrity: sha512-Q5or2o6EKs7+oKmJo7LaqZaMOlDWQse9Tm5l1WAfU/ujLGN5Pb0SqGeVkN/4bpPmEqEP5RnVhiqsOtWtUVwGRw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/webpack/download/webpack-5.65.0.tgz}

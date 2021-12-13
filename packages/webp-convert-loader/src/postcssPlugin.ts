@@ -113,9 +113,13 @@ export default ({ loaderContext, options = {} }) => {
             )
           ).then((filePaths) => {
             const id = genID();
-            console.log(rule.selector, filePaths);
+            filePaths.forEach((filePath) => {
+              loaderContext.addDependency(filePath);
+            })
             data[id] = {
               filePaths,
+              normals: [],
+              webps: [],
             };
             let webpRule;
             let noWebpRule;
@@ -125,7 +129,9 @@ export default ({ loaderContext, options = {} }) => {
               addClass(i, webpClass)
             );
 
-            rule.after(`/* WEBP_HOLDER_${id} **/`);
+            data[id].webpRule = webpRule;
+
+            rule.after(`/*WEBP_HOLDER_${id}*/`);
 
             noWebpRule = rule.clone();
             noWebpRule.removeAll();
@@ -133,7 +139,9 @@ export default ({ loaderContext, options = {} }) => {
               addClass(i, noWebpClass)
             );
 
-            rule.after(`/* NO_WEBP_HOLDER_${id} **/`);
+            rule.after(`/*NO_WEBP_HOLDER_${id}*/`);
+
+            data[id].noWebpRule = noWebpRule;
 
           });
         }
