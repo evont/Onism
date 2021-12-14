@@ -142,7 +142,7 @@ async function imageHandler(imagePath, { encodeOption = {}, quant = {} } = {}) {
   );
   // in case webp convert is disabled by mistake
   if (!encodeOptions.webp) encodeOptions.webp = {};
-  const { size } = await image.decoded;
+  const rawImage = await image.decoded;
   const preProcessQuant = Object.assign(
     {
       numColors: 255,
@@ -155,11 +155,11 @@ async function imageHandler(imagePath, { encodeOption = {}, quant = {} } = {}) {
   });
   await image.encode(encodeOptions);
   await imagePool.close();
-  const rawImage = await image.encodedWith[targetCodec];
+  const rawImageMinify = await image.encodedWith[targetCodec];
   const rawImageInWebp = await image.encodedWith.webp;
   return {
-    size,
     rawImage,
+    rawImageMinify,
     rawImageInWebp
   }
 }

@@ -180,7 +180,6 @@ class WebpConvertPlugin {
           },
           (assets) => {
             for (let file in assets) {
-              console.log(file);
               if (file.endsWith(".css")) {
                 const asset = compilation.getAsset(file); // <- standardized version of asset object
 
@@ -199,7 +198,6 @@ class WebpConvertPlugin {
         );
       } catch (e) {
         this.plugin(compilation, "optimizeChunkAssets", (chunks, callback) => {
-          console.log("optimizeChunkAssets");
           const asssets = [];
           chunks.forEach((chunk) => {
             chunk.files.forEach((file) => {
@@ -218,58 +216,84 @@ class WebpConvertPlugin {
       }
     });
   }
+  generateImage(image, name, compilation, ext = "png") {
+    const buffer = Buffer.from(image.binary);
+    const output = this.getOutput(
+      {
+        name,
+        ext,
+        content: buffer,
+      },
+      compilation
+    );
+    compilation.assets[output.path] = {
+      source: () => buffer,
+      size: () => buffer.length,
+    };
+    return { output };
+  }
   async optimizeTree(compilation, chunks, modules, callback) {
+    const fileMap = new Map();
     try {
       await new Promise<void>(async (resolve, reject) => {
         try {
           for (const [key, item] of Object.entries(this.data)) {
-            const { filePaths } = item;
-            for (const filePath of filePaths) {
-              const { size, rawImage, rawImageInWebp } = await imageHandler(
-                filePath
-              );
-
-              const name = path.basename(filePath, path.extname(filePath));
-              if (rawImage.size < size) {
-                const buffer = Buffer.from(rawImage.binary);
-                const output = this.getOutput(
-                  {
+            const { bgs } = item as { bgs: Array<string[]> };
+            // console.log(bgs);
+            for (const filePaths of bgs) {
+              const normalFiles = [];
+              const webpFiles = [];
+              for (const filePath of filePaths) {
+                let handler;
+                if (fileMap.has(filePath)) {
+                  handler = fileMap.get(filePath);
+                } else {
+                  handler = await imageHandler(filePath);
+                  fileMap.set(filePath, handler);
+                }
+                const { rawImage, rawImageMinify, rawImageInWebp } = handler;
+                const name = path.basename(filePath, path.extname(filePath));
+                let normalFile;
+                let webpFile;
+                if (rawImageMinify.size < rawImage.size) {
+                  const { output } = this.generateImage(
+                    rawImageMinify,
                     name,
-                    ext: "png",
-                    content: buffer,
-                  },
-                  compilation
-                );
-                compilation.assets[output.path] = {
-                  source: () => buffer,
-                  size: () => buffer.length,
-                };
-              }
-
-              if (rawImageInWebp.size < rawImage.size) {
-                const buffer = Buffer.from(rawImageInWebp.binary);
-                const output = this.getOutput(
-                  {
+                    compilation
+                  );
+                  normalFile = output.path;
+                } else {
+                  const { output } = this.generateImage(
+                    rawImage,
                     name,
-                    ext: "webp",
-                    content: buffer
-                  },
-                  compilation
-                );
-                compilation.assets[output.path] = {
-                  source: () => buffer,
-                  size: () => buffer.length,
-                };
+                    compilation
+                  );
+                  normalFile = output.path;
+                }
+
+                if (rawImageInWebp.size < rawImage.size) {
+                  const { output } = this.generateImage(
+                    rawImageInWebp,
+                    name,
+                    compilation,
+                    "webp"
+                  );
+                  webpFile = output.path;
+                } else {
+                  webpFile = normalFile;
+                }
+                normalFiles.push(normalFile);
+                webpFiles.push(webpFile);
               }
+              this.data[key].normals.push(normalFiles)
+              this.data[key].webps.push(webpFiles);
             }
           }
-          console.log("done");
           resolve();
         } catch (e) {
           reject(e);
         }
       });
-      console.log("optimise");
       callback();
     } catch (e) {
       callback(e);
@@ -316,14 +340,21 @@ class WebpConvertPlugin {
 
     return ranges;
   }
-
+  ruleSet = new Set();
   REPLACER_FUNC_ESCAPED(id) {
+    if (this.ruleSet.has(id)) return;
     // console.log('[REPLACER_FUNC_ESCAPED]', this.data[groupName][id]);
-    this.data[id].webpRule.append({
+    this.ruleSet.add(id);
+    const { webpRule, normals, webps } = this.data[id];
+    console.log(id, normals, webps);
+    // const value = webps.map(webp => `url(${webp})`).join(", ");
+    // console.log(id, webps, value, webpRule.selector);
+    webpRule.append({
       prop: "background-image",
       value: "webp",
     });
-    return this.data[id].webpRule.toString();
+    // console.log(webpRule.toString())
+    return webpRule.toString();
   }
 
   getOutputFileName(options) {

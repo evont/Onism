@@ -82,6 +82,7 @@ export default ({ loaderContext, options = {} }) => {
     }
     return selector;
   }
+  const ruleMap = new Map();
   const PostcssPlugin: PluginCreator<{}> = function () {
     return {
       postcssPlugin: "webp-connvert-parser",
@@ -99,7 +100,37 @@ export default ({ loaderContext, options = {} }) => {
               images.push(url);
             }
           }
+          let ruleId;
+          if (ruleMap.has(rule)) {
+            ruleId = ruleMap.get(rule);
+            console.log("has rule", ruleId);
+          } else {
+            ruleId = genID();
+            ruleMap.set(rule, ruleId);
+            data[ruleId] = { bgs: [], normals: [], webps: [] };
+            let webpRule;
+            let noWebpRule;
+            webpRule = rule.clone();
+            webpRule.removeAll();
+            webpRule.selectors = webpRule.selectors.map((i) =>
+              addClass(i, webpClass)
+            );
 
+            data[ruleId].webpRule = webpRule;
+
+            rule.after(`/*WEBP_HOLDER_${ruleId}*/`);
+
+            noWebpRule = rule.clone();
+            noWebpRule.removeAll();
+            noWebpRule.selectors = noWebpRule.selectors.map((i) =>
+              addClass(i, noWebpClass)
+            );
+
+            rule.after(`/*NO_WEBP_HOLDER_${ruleId}*/`);
+
+            data[ruleId].noWebpRule = noWebpRule;
+          }
+          // const declId = genID();
           await Promise.all(
             images.map(
               (image) =>
@@ -112,37 +143,15 @@ export default ({ loaderContext, options = {} }) => {
                 })
             )
           ).then((filePaths) => {
-            const id = genID();
             filePaths.forEach((filePath) => {
               loaderContext.addDependency(filePath);
-            })
-            data[id] = {
-              filePaths,
-              normals: [],
-              webps: [],
-            };
-            let webpRule;
-            let noWebpRule;
-            webpRule = rule.clone();
-            webpRule.removeAll();
-            webpRule.selectors = webpRule.selectors.map((i) =>
-              addClass(i, webpClass)
-            );
-
-            data[id].webpRule = webpRule;
-
-            rule.after(`/*WEBP_HOLDER_${id}*/`);
-
-            noWebpRule = rule.clone();
-            noWebpRule.removeAll();
-            noWebpRule.selectors = noWebpRule.selectors.map((i) =>
-              addClass(i, noWebpClass)
-            );
-
-            rule.after(`/*NO_WEBP_HOLDER_${id}*/`);
-
-            data[id].noWebpRule = noWebpRule;
-
+            });
+            // data[ruleId].bgs[declId] = data[ruleId].bgs[declId] || {
+            //   normals: [],
+            //   webps: []
+            // };
+            // data[ruleId].bgs[declId].filePaths = filePaths;
+            data[ruleId].bgs.push(filePaths)
           });
         }
       },
