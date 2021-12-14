@@ -1,5 +1,5 @@
 import { asyncHooks } from "./hooks";
-import { PLUGIN_NAME } from "../constants";
+import { PLUGIN_NAME, REG_HEAD } from "../constants";
 import { ReplaceDependency } from "./ReplaceDependency";
 import { ReplaceSource } from "webpack-sources";
 import imageHandler from "./imageHandler";
@@ -129,7 +129,8 @@ class WebpConvertPlugin {
     publicPath: undefined,
   };
   data = [];
-  REPLACER_RE = /\/\*WEBP_HOLDER_(\w+)\*\//g;
+  // REPLACER_RE = /\/\*CONVER_HOLDER_(\w+)_(\w+)\*\//g;
+  REPLACER_RE = new RegExp(`/\\*${REG_HEAD}_(\\w+)_(\\w+)\\*/`, 'g')
   plugin(obj, name, callback) {
     if (obj.hooks) {
       if (asyncHooks.includes(name))
@@ -226,6 +227,7 @@ class WebpConvertPlugin {
       },
       compilation
     );
+    console.log(output);
     compilation.assets[output.path] = {
       source: () => buffer,
       size: () => buffer.length,
@@ -285,7 +287,7 @@ class WebpConvertPlugin {
                 normalFiles.push(normalFile);
                 webpFiles.push(webpFile);
               }
-              this.data[key].normals.push(normalFiles)
+              this.data[key].normals.push(normalFiles);
               this.data[key].webps.push(webpFiles);
             }
           }
@@ -329,6 +331,7 @@ class WebpConvertPlugin {
   }
   replaceHolderToRanges(source) {
     const ranges = [];
+    console.log(this.REPLACER_RE)
     source.replace(this.REPLACER_RE, (...args) => {
       const m = args[0];
       const offset = +args[args.length - 2];
@@ -337,24 +340,31 @@ class WebpConvertPlugin {
       ranges.push([offset, offset + m.length - 1, content]);
       return m;
     });
-
     return ranges;
   }
   ruleSet = new Set();
-  REPLACER_FUNC_ESCAPED(id) {
-    if (this.ruleSet.has(id)) return;
-    // console.log('[REPLACER_FUNC_ESCAPED]', this.data[groupName][id]);
-    this.ruleSet.add(id);
-    const { webpRule, normals, webps } = this.data[id];
-    console.log(id, normals, webps);
-    // const value = webps.map(webp => `url(${webp})`).join(", ");
-    // console.log(id, webps, value, webpRule.selector);
-    webpRule.append({
-      prop: "background-image",
-      value: "webp",
-    });
-    // console.log(webpRule.toString())
-    return webpRule.toString();
+  REPLACER_FUNC_ESCAPED(type, id) {
+    const { webpRule, noWebpRule, normals, webps } = this.data[id];
+    let images = normals;
+    let rule = noWebpRule;
+    if (type === "WEBP") {
+      images = webps;
+      rule = webpRule;
+    }
+
+    if (!this.ruleSet.has(images)) {
+      images.forEach((image) => {
+        const value = image.map((item) => `url(${item})`).join(", ");
+        rule.append({
+          prop: "background-image",
+          value: value,
+        });
+      });
+    }
+    this.ruleSet.add(images);
+
+    console.log(rule.toString());
+    return rule.toString();
   }
 
   getOutputFileName(options) {

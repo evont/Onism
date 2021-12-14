@@ -5,7 +5,7 @@ import { ImagePool } from "@squoosh/lib";
 import * as path from "path";
 import * as fs from "fs-extra";
 
-import { PLUGIN_NAME } from "./constants";
+import { NOWEBP_MARK, PLUGIN_NAME, REG_HEAD, WEBP_MARK } from "./constants";
 
 const targets = {
   ".png": "oxipng",
@@ -118,7 +118,7 @@ export default ({ loaderContext, options = {} }) => {
 
             data[ruleId].webpRule = webpRule;
 
-            rule.after(`/*WEBP_HOLDER_${ruleId}*/`);
+            rule.after(`/*${REG_HEAD}_${WEBP_MARK}_${ruleId}*/`);
 
             noWebpRule = rule.clone();
             noWebpRule.removeAll();
@@ -126,7 +126,7 @@ export default ({ loaderContext, options = {} }) => {
               addClass(i, noWebpClass)
             );
 
-            rule.after(`/*NO_WEBP_HOLDER_${ruleId}*/`);
+            rule.after(`/*${REG_HEAD}_${NOWEBP_MARK}_${ruleId}*/`);
 
             data[ruleId].noWebpRule = noWebpRule;
           }

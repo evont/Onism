@@ -52,7 +52,9 @@ module.exports = {
     ],
   },
   plugins: [
-    new WebpConvertPlugin(),
+    new WebpConvertPlugin({
+      filename: '[hash].[ext]'
+    }),
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
