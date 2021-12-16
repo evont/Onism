@@ -1,92 +1,11 @@
+import { ReplaceSource } from "webpack-sources";
+import * as path from "path";
+
+import utils from "./utils";
 import { asyncHooks } from "./hooks";
 import { PLUGIN_NAME, REG_HEAD } from "../constants";
 import { ReplaceDependency } from "./ReplaceDependency";
-import { ReplaceSource } from "webpack-sources";
 import imageHandler from "./imageHandler";
-import { createHash } from "crypto";
-import url from "url";
-import { getHashDigest } from "loader-utils";
-
-import * as path from "path";
-
-const utils = {
-  genMD5(stream) {
-    const md5 = createHash("md5");
-    md5.update(stream);
-    return md5.digest("hex");
-  },
-  urlResolve(base, urlPath) {
-    if (path.sep === "\\") urlPath = urlPath.replace(/\\/g, "/");
-    if (base && base[base.length - 1] !== "/") base = base + "/";
-    return url.resolve(base, urlPath);
-  },
-  createFileName(placeholder, data) {
-    if (data.content) {
-      placeholder = placeholder.replace(
-        /\[(?:(\w+):)?hash(?::([a-z]+\d*))?(?::(\d+))?\]/gi,
-        (all, hashType, digestType, maxLength) =>
-          getHashDigest(data.content, hashType, digestType, parseInt(maxLength))
-      );
-      delete data.content;
-    }
-    return placeholder.replace(/\[([^[]*)\]/g, ($1, $2) => data[$2] || $1);
-  },
-  /**
-   * Prepend an entry or entries to webpack option
-   */
-  prependToEntry(filePaths, entry, includes) {
-    if (typeof filePaths === "string") filePaths = [filePaths];
-
-    if (typeof entry === "string") return [].concat(filePaths, [entry]);
-    else if (Array.isArray(entry)) return [].concat(filePaths, entry);
-    else if (typeof entry === "object") {
-      Object.keys(entry).forEach((key) => {
-        // if key is not included in plugin options.entries
-        if (includes && includes instanceof Array && !includes.includes(key))
-          return;
-        entry[key] = utils.prependToEntry(filePaths, entry[key], includes);
-      });
-      return entry;
-    } else if (typeof entry === "function") {
-      return function () {
-        return Promise.resolve(entry()).then((entry) =>
-          utils.prependToEntry(filePaths, entry, includes)
-        );
-      };
-    } else throw new TypeError("Error entry type: " + typeof entry);
-  },
-  /**
-   * Append an entry or entries to webpack option
-   */
-  appendToEntry(filePaths, entry, includes) {
-    if (typeof filePaths === "string") filePaths = [filePaths];
-
-    if (typeof entry === "string") return [].concat([entry], filePaths);
-    else if (Array.isArray(entry)) return [].concat(entry, filePaths);
-    else if (typeof entry === "object") {
-      Object.keys(entry).forEach((key) => {
-        // if key is not included in plugin options.entries
-        if (includes && includes instanceof Array && !includes.includes(key))
-          return;
-        entry[key] = utils.appendToEntry(filePaths, entry[key], includes);
-      });
-      return entry;
-    } else if (typeof entry === "function") {
-      return function () {
-        return Promise.resolve(entry()).then((entry) =>
-          utils.appendToEntry(filePaths, entry, includes)
-        );
-      };
-    } else throw new TypeError("Error entry type: " + typeof entry);
-  },
-  /**
-   * Escape string
-   * @param {string} string to escape
-   */
-  escape(string) {
-    return string.replace(/[\\'"]/g, "\\$&");
-  },
-};
 
 let ConcatenatedModule;
 try {
@@ -147,23 +66,43 @@ class WebpConvertPlugin {
       ? compiler.webpack.NormalModule
       : require("webpack/lib/NormalModule");
 
-    this.plugin(compiler, "thisCompilation", (compilation, params) => {
-      try {
-        normalModule
-          .getCompilationHooks(compilation)
-          .loader.tap(
-            PLUGIN_NAME,
-            (loaderContext) => (loaderContext[PLUGIN_NAME] = this)
+      this.plugin(compiler, 'compilation', (compilation, params) => {
+        try {
+          normalModule
+            .getCompilationHooks(compilation)
+            .loader.tap(
+              PLUGIN_NAME,
+              (loaderContext) => (loaderContext[PLUGIN_NAME] = this)
+            );
+        } catch (e) {
+          this.plugin(
+            compilation,
+            "normalModuleLoader",
+            (loaderContext, module) => {
+              loaderContext[PLUGIN_NAME] = this;
+            }
           );
-      } catch (e) {
-        this.plugin(
-          compilation,
-          "normalModuleLoader",
-          (loaderContext, module) => {
-            loaderContext[PLUGIN_NAME] = this;
-          }
-        );
-      }
+        }
+      })
+
+    this.plugin(compiler, "thisCompilation", (compilation, params) => {
+      // try {
+      //   normalModule
+      //     .getCompilationHooks(compilation)
+      //     .loader.tap(
+      //       PLUGIN_NAME,
+      //       (loaderContext) => (loaderContext[PLUGIN_NAME] = this)
+      //     );
+      // } catch (e) {
+      //   this.plugin(
+      //     compilation,
+      //     "normalModuleLoader",
+      //     (loaderContext, module) => {
+      //       console.log('tapping', this)
+      //       loaderContext[PLUGIN_NAME] = this;
+      //     }
+      //   );
+      // }
 
       this.plugin(compilation, "optimizeTree", (chunks, modules, callback) =>
         this.optimizeTree(compilation, chunks, modules, callback)
@@ -227,11 +166,11 @@ class WebpConvertPlugin {
       },
       compilation
     );
-    console.log(output);
     compilation.assets[output.path] = {
       source: () => buffer,
       size: () => buffer.length,
     };
+    console.log(output);
     return { output };
   }
   async optimizeTree(compilation, chunks, modules, callback) {
@@ -241,7 +180,6 @@ class WebpConvertPlugin {
         try {
           for (const [key, item] of Object.entries(this.data)) {
             const { bgs } = item as { bgs: Array<string[]> };
-            // console.log(bgs);
             for (const filePaths of bgs) {
               const normalFiles = [];
               const webpFiles = [];
@@ -300,8 +238,6 @@ class WebpConvertPlugin {
     } catch (e) {
       callback(e);
     }
-
-    // Promise.all(promises).then(() => callback()).catch(e => callback(e))
   }
   replaceInModules(chunks, compilation) {
     const allModules = getAllModules(compilation);
@@ -325,13 +261,9 @@ class WebpConvertPlugin {
         }
       }
     });
-    // for (const [key, value] of Object.entries(this.data)) {
-    //   console.log(key, value.webp.toString());
-    // }
   }
   replaceHolderToRanges(source) {
     const ranges = [];
-    console.log(this.REPLACER_RE)
     source.replace(this.REPLACER_RE, (...args) => {
       const m = args[0];
       const offset = +args[args.length - 2];
@@ -362,8 +294,6 @@ class WebpConvertPlugin {
       });
     }
     this.ruleSet.add(images);
-
-    console.log(rule.toString());
     return rule.toString();
   }
 

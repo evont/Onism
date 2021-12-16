@@ -48,10 +48,6 @@ export default ({ loaderContext, options = {} }) => {
     webpClass,
     addNoJs,
     noJsClass,
-    minifyFormate,
-    webpFormate,
-    encodeOption,
-    quant,
   } = {
     ...DEFAULT_OPTIONS,
     ...options,
@@ -103,7 +99,6 @@ export default ({ loaderContext, options = {} }) => {
           let ruleId;
           if (ruleMap.has(rule)) {
             ruleId = ruleMap.get(rule);
-            console.log("has rule", ruleId);
           } else {
             ruleId = genID();
             ruleMap.set(rule, ruleId);
@@ -130,7 +125,6 @@ export default ({ loaderContext, options = {} }) => {
 
             data[ruleId].noWebpRule = noWebpRule;
           }
-          // const declId = genID();
           await Promise.all(
             images.map(
               (image) =>
@@ -146,11 +140,6 @@ export default ({ loaderContext, options = {} }) => {
             filePaths.forEach((filePath) => {
               loaderContext.addDependency(filePath);
             });
-            // data[ruleId].bgs[declId] = data[ruleId].bgs[declId] || {
-            //   normals: [],
-            //   webps: []
-            // };
-            // data[ruleId].bgs[declId].filePaths = filePaths;
             data[ruleId].bgs.push(filePaths)
           });
         }

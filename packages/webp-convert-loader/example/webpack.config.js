@@ -10,6 +10,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     publicPath: "",
+    // assetModuleFilename: 'images/[hash][ext][query]'
   },
   resolve: {
     alias: {
@@ -22,6 +23,19 @@ module.exports = {
   stats: "minimal",
   module: {
     rules: [
+      {
+        test: /\.(png|jpe?g|webp||gif)$/i,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192,
+              loader: "file-loader",
+              outputPath: "images"
+            }
+          },
+        ],
+      },
       {
         test: /\.css$/i,
         use: [
@@ -53,7 +67,8 @@ module.exports = {
   },
   plugins: [
     new WebpConvertPlugin({
-      filename: '[hash].[ext]'
+      filename: '[hash].[ext]',
+      output: "images"
     }),
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin(),
