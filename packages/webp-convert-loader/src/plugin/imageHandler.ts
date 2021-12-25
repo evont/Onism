@@ -160,9 +160,8 @@ async function imageHandler(imagePath, { encodeOption = {}, quant = {} } = {}) {
   return {
     rawImage,
     rawImageMinify,
-    rawImageInWebp
-  }
+    rawImageInWebp,
+  };
 }
-
 
 export default imageHandler;

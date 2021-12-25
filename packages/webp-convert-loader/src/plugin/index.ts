@@ -170,7 +170,6 @@ class WebpConvertPlugin {
       source: () => buffer,
       size: () => buffer.length,
     };
-    console.log(output);
     return { output };
   }
   async optimizeTree(compilation, chunks, modules, callback) {

@@ -6,7 +6,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { WebpConvertPlugin } = require("@onism/webp-convert-loader");
 module.exports = {
   mode: "production",
-  entry: "./src/index.js",
+  entry: "../src/index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
     publicPath: "",
@@ -14,9 +14,9 @@ module.exports = {
   },
   resolve: {
     alias: {
-      "@assets": path.resolve("./src/assets"),
-      "@": path.resolve("./src"),
-      _$: path.resolve("./src"),
+      "@assets": path.resolve("../src/assets"),
+      "@": path.resolve("../src"),
+      _$: path.resolve("../src"),
     },
   },
   // watch: true,
@@ -73,7 +73,7 @@ module.exports = {
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
-      template: "./public/index.html",
+      template: "../public/index.html",
     }),
   ],
 };

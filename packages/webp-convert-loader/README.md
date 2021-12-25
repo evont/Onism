@@ -44,7 +44,13 @@ module: {
       ],
     },
   ];
-}
+},
+plugins: [
+  new WebpConvertPlugin({
+    filename: '[hash].[ext]',
+    output: "images"
+  }),
+]
 ```
 
 You need to manually import `@onism/webp-convert-loader/polyfill.js` or insert script that can detect webp support of browser in the `<head>` tag.
