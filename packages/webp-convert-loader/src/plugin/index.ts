@@ -21,8 +21,6 @@ function getAllModules(compilation) {
       getAllModules
     );
     modules = modules.concat(...childModulesList);
-
-    //  if (!isWebpack4) modules = new Set(modules);
   }
 
   if (ConcatenatedModule) {

@@ -128,7 +128,6 @@ const targets = {
   // ...minifyOptions.targets,
 };
 async function imageHandler(imagePath, { encodeOption = {}, quant = {} } = {}) {
-  console.log(quant, encodeOption)
   const imagePool = new ImagePool();
   const image = imagePool.ingestImage(imagePath);
   const ext = path.extname(imagePath).toLowerCase();
