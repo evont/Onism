@@ -42,14 +42,22 @@ class WebpConvertPlugin {
   constructor(options) {
     this.options = Object.assign(this.options, options || {});
   }
-  options = {
+  options: {
+    output?: string;
+    filename?: string;
+    publicPath?: string;
+    encodeOption?: Record<string, any>;
+    quant?: {
+      numColors?: number;
+      ditter?: number;
+    };
+  } = {
     output: "./",
     filename: "[name].[ext]",
     publicPath: undefined,
   };
   data = [];
-  // REPLACER_RE = /\/\*CONVER_HOLDER_(\w+)_(\w+)\*\//g;
-  REPLACER_RE = new RegExp(`/\\*${REG_HEAD}_(\\w+)_(\\w+)\\*/`, 'g')
+  REPLACER_RE = new RegExp(`/\\*${REG_HEAD}_(\\w+)_(\\w+)\\*/`, "g");
   plugin(obj, name, callback) {
     if (obj.hooks) {
       if (asyncHooks.includes(name))
@@ -66,44 +74,26 @@ class WebpConvertPlugin {
       ? compiler.webpack.NormalModule
       : require("webpack/lib/NormalModule");
 
-      this.plugin(compiler, 'compilation', (compilation, params) => {
-        try {
-          normalModule
-            .getCompilationHooks(compilation)
-            .loader.tap(
-              PLUGIN_NAME,
-              (loaderContext) => (loaderContext[PLUGIN_NAME] = this)
-            );
-        } catch (e) {
-          this.plugin(
-            compilation,
-            "normalModuleLoader",
-            (loaderContext, module) => {
-              loaderContext[PLUGIN_NAME] = this;
-            }
+    this.plugin(compiler, "compilation", (compilation, params) => {
+      try {
+        normalModule
+          .getCompilationHooks(compilation)
+          .loader.tap(
+            PLUGIN_NAME,
+            (loaderContext) => (loaderContext[PLUGIN_NAME] = this)
           );
-        }
-      })
+      } catch (e) {
+        this.plugin(
+          compilation,
+          "normalModuleLoader",
+          (loaderContext, module) => {
+            loaderContext[PLUGIN_NAME] = this;
+          }
+        );
+      }
+    });
 
     this.plugin(compiler, "thisCompilation", (compilation, params) => {
-      // try {
-      //   normalModule
-      //     .getCompilationHooks(compilation)
-      //     .loader.tap(
-      //       PLUGIN_NAME,
-      //       (loaderContext) => (loaderContext[PLUGIN_NAME] = this)
-      //     );
-      // } catch (e) {
-      //   this.plugin(
-      //     compilation,
-      //     "normalModuleLoader",
-      //     (loaderContext, module) => {
-      //       console.log('tapping', this)
-      //       loaderContext[PLUGIN_NAME] = this;
-      //     }
-      //   );
-      // }
-
       this.plugin(compilation, "optimizeTree", (chunks, modules, callback) =>
         this.optimizeTree(compilation, chunks, modules, callback)
       );
@@ -187,7 +177,10 @@ class WebpConvertPlugin {
                 if (fileMap.has(filePath)) {
                   handler = fileMap.get(filePath);
                 } else {
-                  handler = await imageHandler(filePath);
+                  handler = await imageHandler(filePath, {
+                    encodeOption: this.options.encodeOption ?? {},
+                    quant: this.options.quant ?? {},
+                  });
                   fileMap.set(filePath, handler);
                 }
                 const { rawImage, rawImageMinify, rawImageInWebp } = handler;

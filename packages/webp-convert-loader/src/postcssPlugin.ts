@@ -38,9 +38,7 @@ export default ({ loaderContext, options = {} }) => {
     addNoJs: false,
     noJsClass: "no-js",
     minifyFormate: "minify/[name][ext]",
-    webpFormate: "webp/[name][ext].webp",
-    encodeOption: {},
-    quant: {},
+    webpFormate: "webp/[name][ext].webp"
   };
   let {
     modules,

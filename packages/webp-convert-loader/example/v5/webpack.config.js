@@ -34,18 +34,6 @@ module.exports = {
               // modules: true,
               minifyFormate: "minify/[name]_minify[ext]",
               webpFormate: "webp/[name].[contenthash:8].webp",
-              // encodeOption: {
-              //   oxipng: {
-              //     level: 4
-              //   },
-              //   mozjpeg: {
-              //     quality: 60
-              //   }
-              // },
-              // quant: {
-              //   numColors: 250,
-              //   dither: 0.6
-              // }
             },
           },
         ],
@@ -54,8 +42,23 @@ module.exports = {
   },
   plugins: [
     new WebpConvertPlugin({
-      filename: '[hash].[ext]',
-      output: "images"
+      filename: "[hash].[ext]",
+      output: "images",
+      encodeOption: {
+        oxipng: {
+          level: 4,
+        },
+        mozjpeg: {
+          quality: 60,
+        },
+        webp: {
+          quality: 60
+        }
+      },
+      quant: {
+        numColors: 250,
+        dither: 0.6,
+      },
     }),
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin(),
