@@ -12,7 +12,10 @@
     "cz": "git-cz",
     "bootstrap": "pnpm i -w",
     "task": "node ./script/task.js",
-    "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' +"
+    "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' +",
+    "cs:init": "changeset init",
+    "cs:add": "changeset add",
+    "cs:vs": "changeset version"
   },
   "config": {
     "commitizen": {
@@ -35,6 +38,7 @@
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.6",
     "@babel/preset-typescript": "^7.15.0",
+    "@changesets/cli": "^2.19.0",
     "@commitlint/cli": "^13.1.0",
     "@commitlint/config-conventional": "^13.1.0",
     "@types/node": "^16.9.1",
