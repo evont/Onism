@@ -15,7 +15,8 @@
     "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' +",
     "cs:init": "changeset init",
     "cs:add": "changeset add",
-    "cs:vs": "changeset version"
+    "cs:vs": "changeset version",
+    "cs:ps": "changeset publish"
   },
   "config": {
     "commitizen": {
